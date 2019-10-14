@@ -44,12 +44,8 @@ public class Parser {
 			this(src, 0);
 		}
 		
-		@SafeVarargs
-		public final <LT extends ILexeme> void removeNotApplicable(List<LT>... lexemes)
-		{
-			
-			List<List<LT>> ll = Arrays.asList(lexemes);
-			
+		public void removeNotApplicable(List<ILexeme> lexemes)
+		{			
 			int startIdx = currentPosition;
 
 			for (; currentPosition < src.length(); ++currentPosition) {
@@ -61,21 +57,16 @@ public class Parser {
 				}
 
 				if (
-						ll.stream().anyMatch(
-								l -> l.stream().anyMatch(
-										t -> t.isStringRepresentationStartsWith(stringToAnalyze)
-								)
-						)
+					lexemes.stream().anyMatch(
+							t -> t.isStringRepresentationStartsWith(stringToAnalyze)
+					)
 				) {
-					
-					ll.stream().forEach(
-							l -> l.removeIf(t -> !t.isStringRepresentationStartsWith(stringToAnalyze))
-					);
+					lexemes.removeIf(t -> !t.isStringRepresentationStartsWith(stringToAnalyze));
 					continue;
 				}
 				
 				if (startIdx == currentPosition) {
-					ll.forEach(List::clear);
+					lexemes.clear();
 				}
 				
 				return;
@@ -156,10 +147,10 @@ public class Parser {
 	
 	public IVO parse(Scope<IVO> scope) throws ParserException {
 
-		List<ILexeme> applicableTypes = new ArrayList<ILexeme>(_types);
-		applicableTypes.addAll(_functions);
+		List<ILexeme> lexemes = new ArrayList<ILexeme>(_types);
+		lexemes.addAll(_functions);
 
-		scope.removeNotApplicable(applicableTypes);
+		scope.removeNotApplicable(lexemes);
 		
 		final String candidateRawSrc = scope.src.substring(scope.startPosition, scope.currentPosition);
 		final String candidateSrc = candidateRawSrc.trim();
@@ -167,8 +158,8 @@ public class Parser {
 		if ("".equals(candidateSrc))
 			return null;
 
-		if (1 == applicableTypes.size() && (applicableTypes.get(0) instanceof ITypeDescriptor<?>)) {
-			ITypeDescriptor<?> td = (ITypeDescriptor<?>) applicableTypes.get(0);
+		if (1 == lexemes.size() && (lexemes.get(0) instanceof ITypeDescriptor<?>)) {
+			ITypeDescriptor<?> td = (ITypeDescriptor<?>) lexemes.get(0);
 			
 			if (!td.isStringRepresentationValid(candidateSrc)) {
 				throw new ParserException(
@@ -184,10 +175,10 @@ public class Parser {
 			if ("".equals(scope.src.substring(scope.currentPosition).trim())) return vo;
 		}
 		
-		if (applicableTypes.size() > 1 && applicableTypes.stream().anyMatch(l -> !(l instanceof IFunction))) {
+		if (lexemes.size() > 1 && lexemes.stream().anyMatch(l -> !(l instanceof IFunction))) {
 			throw new ParserException(
 					"Ambiguous source code (%d lexemes are applicable simultaneously) near position: %d. String: %s%s%s",
-					applicableTypes.size(), 
+					lexemes.size(), 
 					scope.currentPosition, 
 					scope.startPosition > 0 ? "..." : "",
 					candidateRawSrc, 
