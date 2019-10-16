@@ -106,9 +106,9 @@ public class Parser {
 			List<IOperator> operators = new ArrayList<IOperator>(_operators);
 			
 			if(null == scope.leftOperand)
-				operators.removeIf(f -> f.isLeftArgumentExpected());
+				operators.removeIf(f -> f.isLeftOperandExpected());
 			else
-				operators.removeIf(f -> !f.isLeftArgumentExpected());
+				operators.removeIf(f -> !f.isLeftOperandExpected());
 			
 			Scope s = scope.copyForward();
 			
@@ -135,7 +135,7 @@ public class Parser {
 			
 		}
 
-		if(null == scope.leftOperand && operator.isLeftArgumentExpected())
+		if(null == scope.leftOperand && operator.isLeftOperandExpected())
 			throw new ParserException(
 					"left operand is missed for operator %s near position: %s",
 					operator.getLexemeId(),
@@ -145,7 +145,7 @@ public class Parser {
 		final List<IVO> operands = new ArrayList<IVO>();
 		
 		if(null != scope.leftOperand) {
-			if(!operator.isLeftArgumentExpected())
+			if(!operator.isLeftOperandExpected())
 				throw new ParserException(
 						"left operand is not expected for operator %s near position: %s",
 						operator.getLexemeId(),
@@ -211,6 +211,7 @@ public class Parser {
 						);
 				
 				return _parseOperatorEvaluationVO(scope.copyForward(vo), null);
+			}
 			
 //			if (lexemes.get(0) instanceof IOperator) {
 //				IOperator o = (IOperator) lexemes.get(0);
@@ -232,7 +233,7 @@ public class Parser {
 //							scope.leftOperand.getSrc(), 
 //							scope.getCurrentPositionDescription(candidateRawSrc.length())
 //						);
-			}
+//			}
 		}
 		
 //		if (lexemes.size() > 1 && lexemes.stream().anyMatch(l -> !(l instanceof IOperator))) {
