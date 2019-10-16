@@ -10,6 +10,7 @@ import org.ido.syntax.NotSupportedOperatorException;
 import org.ido.syntax.ParserException;
 import org.ido.syntax.SyntaxException;
 import org.ido.syntax.operator.Addition;
+import org.ido.syntax.operator.Subtraction;
 
 public class LongTypeDescriptor implements ITypeDescriptor<Long> {
 
@@ -56,7 +57,17 @@ public class LongTypeDescriptor implements ITypeDescriptor<Long> {
 			Long left = castValue(operands.get(0));
 			return left + castValue(operands.get(1));
 		}
-
+		
+		if (operator instanceof Subtraction) {
+			if (2 != operands.size()) {
+				throw new NotSupportedOperatorException(
+						"Type %s cannot apply operator %s using &d operands. Expected operands count is 2",
+						getLexemeId(), operator.getLexemeId(), operands.size());
+			}
+			Long left = castValue(operands.get(0));
+			return left - castValue(operands.get(1));
+		}
+		
 		throw new NotSupportedOperatorException("Type %s does not support operator %s");
 	}
 

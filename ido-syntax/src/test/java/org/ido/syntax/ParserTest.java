@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.ido.syntax.operator.Addition;
+import org.ido.syntax.operator.Subtraction;
 import org.ido.syntax.type.LongTypeDescriptor;
 import org.junit.Test;
 
@@ -39,5 +40,20 @@ public class ParserTest {
 		assertEquals(new Long(179), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
 		assertEquals("123 + 56", vo.getSrc());
+	}
+	
+	@Test
+	public void testLongsSubraction() throws SyntaxException {
+		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		final Parser p = new Parser(
+				Arrays.asList(td),
+				Arrays.asList((IOperator) new Subtraction())
+		);
+		
+		IVO vo = p.parse(" 179 - 56");
+		assertNotNull(vo);
+		assertEquals(new Long(123), vo.getValue());
+		assertSame(td, vo.getTypeDescriptor());
+		assertEquals("179 - 56", vo.getSrc());
 	}
 }
