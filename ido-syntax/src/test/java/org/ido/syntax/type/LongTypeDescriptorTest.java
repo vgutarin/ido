@@ -11,7 +11,7 @@ public class LongTypeDescriptorTest {
 	
 	@Test
 	public void testGetId() {
-		assertEquals("Long", ltd.getTypeId());
+		assertEquals("Long", ltd.getLexemeId());
 	}
 	
 	@Test

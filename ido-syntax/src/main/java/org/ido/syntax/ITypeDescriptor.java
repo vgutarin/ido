@@ -1,9 +1,11 @@
 package org.ido.syntax;
 
+import java.util.List;
+
 public interface ITypeDescriptor<T> extends ILexeme {
-	String getTypeId();
 	boolean isCompartible(ITypeDescriptor<?> type);
-	T cast(ITypeDescriptor<?> type, Object value);
+	T castValue(IVO value) throws SyntaxException;
 	boolean isStringRepresentationValid(String src);
 	Object parseVo(String src) throws ParserException;
+	T apply(IOperator operator, List<IVO> operands) throws SyntaxException;
 }

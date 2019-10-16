@@ -9,7 +9,7 @@ package org.ido.syntax;
  */
 public interface IVO {
 	ITypeDescriptor<?> getTypeDescriptor();
-	Object getValue();
+	Object getValue() throws SyntaxException;
 	String getSrc();
 	boolean isMutable();
 }
