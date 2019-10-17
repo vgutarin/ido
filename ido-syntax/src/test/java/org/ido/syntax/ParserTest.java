@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.ido.syntax.operator.Addition;
+import org.ido.syntax.operator.Multiplication;
 import org.ido.syntax.operator.Subtraction;
 import org.ido.syntax.type.LongTypeDescriptor;
 import org.junit.Test;
@@ -72,5 +73,41 @@ public class ParserTest {
 		assertEquals(new Long(173), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
 		assertEquals("50 + 179 - 56", vo.getComponentDesc().str);
+	}
+	
+	@Test
+	public void testLongsMultiplication() throws SyntaxException {
+		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		final Parser p = new Parser(
+				Arrays.asList(td),
+				Arrays.asList(
+						new Subtraction(),
+						new Multiplication())
+		);
+		
+		IVO vo = p.parse(" 179 *56");
+		assertNotNull(vo);
+		assertEquals(new Long(10024), vo.getValue());
+		assertSame(td, vo.getTypeDescriptor());
+		assertEquals("179 *56", vo.getComponentDesc().str);
+	}
+	
+	@Test
+	public void testLongsAdditionAndMultiplication() throws SyntaxException {
+		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		final Parser p = new Parser(
+				Arrays.asList(td),
+				Arrays.asList(
+					new Addition(),
+					new Subtraction(),
+					new Multiplication())
+		);
+		
+		IVO vo = p.parse("50 + 179 *56");
+		assertNotNull(vo);
+		assertEquals(new Long(10074), vo.getValue());
+		assertSame(td, vo.getTypeDescriptor());
+		assertEquals("50 + 179 *56", vo.getComponentDesc().str);
+		assertEquals(vo.getValue(), p.parse("179*56+50").getValue());
 	}
 }
