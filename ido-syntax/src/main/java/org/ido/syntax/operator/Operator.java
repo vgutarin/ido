@@ -1,22 +1,30 @@
 package org.ido.syntax.operator;
 
 import org.ido.syntax.IOperator;
+import org.ido.syntax.OperatorPriority;
 
 public abstract class Operator implements IOperator {
 
-	final String _lexeme, _lexemeId;
-	final boolean _isLeftOperandExpected;
+	private final String _lexeme, _lexemeId;
+	private final boolean _isLeftOperandExpected;
+	private final OperatorPriority _priority;
 	
-	public Operator(String lexeme, boolean isLeftOperandExpected) {
+	protected Operator(OperatorPriority priority, String lexeme, boolean isLeftOperandExpected) {
 		_lexeme = lexeme;
 		_isLeftOperandExpected = isLeftOperandExpected;
 		_lexemeId = "operator." + getClass().getSimpleName();
+		_priority = priority;
 	}
 	
-	protected Operator(String lexeme) {
-		this(lexeme, true);
+	protected Operator(OperatorPriority priority, String lexeme) {
+		this(priority, lexeme, true);
 	}
 
+	@Override
+	public OperatorPriority getPriority() {
+		return _priority;
+	}
+	
 	@Override
 	public String getLexemeId() {
 		return _lexemeId;

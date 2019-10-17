@@ -10,6 +10,6 @@ package org.ido.syntax;
 public interface IVO {
 	ITypeDescriptor<?> getTypeDescriptor();
 	Object getValue() throws SyntaxException;
-	String getSrc();
+	ExpressionComponent getComponentDesc();
 	boolean isMutable();
 }

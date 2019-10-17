@@ -2,17 +2,27 @@ package org.ido.syntax.operator;
 
 import static org.junit.Assert.*;
 
+import org.ido.syntax.OperatorPriority;
 import org.junit.Test;
 
 public class OperatorTest {
 
 	private class OperatorImpl extends Operator{
+		
+		public OperatorImpl(OperatorPriority priority, String lexeme, boolean isLeftOperandExpected) {
+			super(priority, lexeme, isLeftOperandExpected);
+		}
+		
+		public OperatorImpl(OperatorPriority priority, String lexeme) {
+			super(priority, lexeme);
+		}
+		
 		public OperatorImpl(String lexeme) {
-			super(lexeme);
+			this(OperatorPriority.Lowest, lexeme);
 		}
 		
 		public OperatorImpl(String lexeme, boolean isLeftOperandExpected) {
-			super(lexeme, isLeftOperandExpected);
+			this(OperatorPriority.Lowest, lexeme, isLeftOperandExpected);
 		}
 	}
 	
@@ -65,4 +75,11 @@ public class OperatorTest {
 		assertFalse(o.isStringRepresentationValid("*"));
 	}
 
+	@Test
+	public void testOperator_Priority() {
+		for(OperatorPriority p : OperatorPriority.values()) {
+			assertSame(p, new OperatorImpl(p, "any").getPriority());
+			assertSame(p, new OperatorImpl(p, "any", false).getPriority());
+		}
+	}
 }

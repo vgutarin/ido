@@ -12,79 +12,6 @@ public class Parser {
 	private final List<ITypeDescriptor<?>> _types;
 	private final List<IOperator> _operators;
 
-	private class Scope {
-
-		public final String src;
-		public final int startPosition;
-		public int currentPosition;
-		public final IOperator operator;
-		public final IVO leftOperand;
-
-		private Scope(String src, int startPosition, IVO leftOperand, IOperator operator) {
-			this.src = src;
-			this.startPosition = currentPosition = startPosition;
-			this.operator = operator;
-			this.leftOperand = leftOperand;
-		}
-
-		public Scope(String src) {
-			this(src, 0, null, null);
-		}
-
-		public Scope copyForward() {
-			return new Scope(src, currentPosition, leftOperand, operator);
-		}
-
-		public Scope copyForward(IVO leftOperand) {
-			return new Scope(src, currentPosition, leftOperand, operator);
-		}
-
-		public Scope copyForward(IOperator operator) {
-			return new Scope(src, currentPosition, leftOperand, operator);
-		}
-
-		public <LT extends ILexeme> void removeNotApplicable(List<LT> lexemes) {
-			int startIdx = currentPosition;
-
-			for (; currentPosition < src.length(); ++currentPosition) {
-				final String stringToAnalyze = src.substring(startIdx, currentPosition + 1);
-				if ("".equals(stringToAnalyze.trim())) {
-					// skip leading white symbols;
-					++startIdx;
-					continue;
-				}
-
-				if (lexemes.stream().anyMatch(t -> t.isStringRepresentationStartsWith(stringToAnalyze))) {
-					lexemes.removeIf(t -> !t.isStringRepresentationStartsWith(stringToAnalyze));
-					continue;
-				}
-
-				if (startIdx == currentPosition) {
-					lexemes.clear();
-				}
-
-				return;
-			}
-		}
-
-		public String getCurrentPositionDescription(int substrLength ) {
-			int startIdx = currentPosition;
-			if(substrLength < 0){
-				substrLength = -substrLength;
-				startIdx -= substrLength;
-			}
-			
-			if(startIdx < 0) startIdx = 0;
-			if(startIdx + substrLength > src.length()) substrLength = src.length() - startIdx;
-			
-			return String.format("%d. String: %s%s%s",
-					currentPosition, 
-					startIdx > 0 ? "..." : "",
-					src.substring(startIdx, startIdx + substrLength), 
-					startIdx + substrLength < src.length() - 1 ? "..." : "");
-		}
-	}
-
 	public Parser(List<ITypeDescriptor<?>> types, List<IOperator> functions) {
 
 		// TODO make sure typeId`s are unique
@@ -92,139 +19,119 @@ public class Parser {
 		_operators = new ArrayList<IOperator>(functions);
 	}
 
-//	private List<IVO> _parseFunctionRighttArgument(Scope<?> scope, IOperator function) throws ParserException {
-//		if (!function.isArgumentsClosingCharacterExpected()) {
-//			Scope voScope = new Scope<IVO>(scope.src, scope.currentPosition, function);
-//		}
-//		return null;
-//	}
+	private <LT extends ILexeme> void _removeNotApplicable(Source src, List<LT> lexemes) {
+		int startIdx =  src.currentPosition;
 
-	private OperatorEvaluationVO _parseOperatorEvaluationVO(Scope scope, IOperator operator) throws ParserException {
-
-		if (null == operator) {
-			List<IOperator> operators = new ArrayList<IOperator>(_operators);
-
-			if (null == scope.leftOperand)
-				operators.removeIf(f -> f.isLeftOperandExpected());
-			else
-				operators.removeIf(f -> !f.isLeftOperandExpected());
-
-			Scope s = scope.copyForward();
-
-			s.removeNotApplicable(operators);
-
-			if (operators.isEmpty()) {
-				throw new ParserException("Could not find applicable operator near position: %s",
-						scope.getCurrentPositionDescription(5));
+		for (; src.currentPosition < src.str.length(); ++src.currentPosition) {
+			final String stringToAnalyze = src.str.substring(startIdx, src.currentPosition + 1);
+			if ("".equals(stringToAnalyze.trim())) {
+				// skip leading white symbols;
+				++startIdx;
+				continue;
 			}
 
-			if (operators.size() > 1) {
-				throw new ParserException("Ambiguous operators (%s are applicable simultaneously) near position: %s",
-						String.join(",", operators.stream().map(o -> o.getLexemeId()).collect(Collectors.toList())),
-						scope.getCurrentPositionDescription(s.currentPosition - scope.currentPosition));
+			if (lexemes.stream().anyMatch(t -> t.isStringRepresentationStartsWith(stringToAnalyze))) {
+				lexemes.removeIf(t -> !t.isStringRepresentationStartsWith(stringToAnalyze));
+				continue;
 			}
 
-			operator = operators.get(0);
-			scope.currentPosition = s.currentPosition;
+			if (startIdx == src.currentPosition) {
+				lexemes.clear();
+			}
 
+			return;
 		}
-
-		if (null == scope.leftOperand && operator.isLeftOperandExpected())
-			throw new ParserException("left operand is missed for operator %s near position: %s",
-					operator.getLexemeId(), scope.getCurrentPositionDescription(0));
-
-		final List<IVO> operands = new ArrayList<IVO>();
-
-		if (null != scope.leftOperand) {
-			if (!operator.isLeftOperandExpected())
-				throw new ParserException("left operand is not expected for operator %s near position: %s",
-						operator.getLexemeId(), scope.getCurrentPositionDescription(0));
-			operands.add(scope.leftOperand);
-		}
-
-		Scope s = scope.copyForward(operator);
-		IVO rightOperand = parse(s);
-
-		if (null == rightOperand)
-			throw new ParserException("Righ operand has not been found for operator %s near position: %s",
-					operator.getLexemeId(), scope.getCurrentPositionDescription(-1));
-
-		operands.add(rightOperand);
-
-		return new OperatorEvaluationVO((null != scope.leftOperand ? scope.leftOperand.getSrc() : "")
-				+ scope.src.substring(scope.startPosition, s.currentPosition), operator, operands);
 	}
-
-	public IVO parse(Scope scope) throws ParserException {
-
+	
+	private ExpressionComponent _parseComponent(Source src) throws ParserException {
 		List<ILexeme> lexemes = new ArrayList<ILexeme>(_types);
 		lexemes.addAll(_operators);
+		final int startPosition = src.currentPosition;
+		_removeNotApplicable(src, lexemes);
 
-		scope.removeNotApplicable(lexemes);
-
-		final String candidateRawSrc = scope.src.substring(scope.startPosition, scope.currentPosition);
+		final String candidateRawSrc = src.str.substring(startPosition, src.currentPosition);
 		final String candidateSrc = candidateRawSrc.trim();
 
-		if ("".equals(candidateSrc))
-			return null;
+		if (lexemes.isEmpty())
+			throw new ParserException("Cannot find any lexeme on position: %s.",
+					src.getCurrentPositionDescription());
 
-		if (1 == lexemes.size()) {
+		if (1 < lexemes.size())
+			throw new ParserException(
+					"Ambiguous source code (%s lexemes are applicable simultaneously) near position: %s",
+					String.join(", ", lexemes.stream().map(l -> l.getLexemeId()).collect(Collectors.toList())),
+					src.getCurrentPositionDescription());
 
-			if (lexemes.get(0) instanceof ITypeDescriptor<?>) {
-				ITypeDescriptor<?> td = (ITypeDescriptor<?>) lexemes.get(0);
-
-				if (!td.isStringRepresentationValid(candidateSrc)) {
-					throw new ParserException("Type %s is not able to parse source near position: %s.",
-							td.getLexemeId(), scope.getCurrentPositionDescription(candidateRawSrc.length()));
-				}
-
-				IVO vo = new ImmutableVO(candidateSrc, td);
-				if ("".equals(scope.src.substring(scope.currentPosition).trim()))
-					return vo;
-
-				if (null != scope.leftOperand)
-					throw new ParserException("Not empty left argument %s near position: %s",
-							scope.leftOperand.getSrc(), scope.getCurrentPositionDescription(candidateRawSrc.length()));
-
-				return _parseOperatorEvaluationVO(scope.copyForward(vo), null);
+		final ExpressionComponent ec = new ExpressionComponent(src, startPosition, src.currentPosition - startPosition, lexemes.get(0));
+		if (null != ec.typeDescriptor) {
+			if (!ec.typeDescriptor.isStringRepresentationValid(candidateSrc)) {
+				throw new ParserException("Type %s is not able to parse source near position: %s.", ec.lexeme.getLexemeId(),
+						src.getCurrentPositionDescription());
 			}
-
-//			if (lexemes.get(0) instanceof IOperator) {
-//				IOperator o = (IOperator) lexemes.get(0);
-//				
-//				if (!o.isStringRepresentationValid(candidateSrc)) {
-//					throw new ParserException(
-//							"Operator %s is not able to parse source near position: %s.",
-//							td.getLexemeId(),
-//							scope.getCurrentPositionDescription(candidateRawSrc.length())
-//					);
-//				}
-//				
-//				IVO vo = new ImmutableVO(candidateSrc, td);
-//				if ("".equals(scope.src.substring(scope.currentPosition).trim())) return vo;
-//				
-//				if (null != scope.leftOperand) {
-//					throw new ParserException(
-//							"Not empty left argument %s near position: %s",
-//							scope.leftOperand.getSrc(), 
-//							scope.getCurrentPositionDescription(candidateRawSrc.length())
-//						);
-//			}
+			return ec;
 		}
-
-//		if (lexemes.size() > 1 && lexemes.stream().anyMatch(l -> !(l instanceof IOperator))) {
-//			throw new ParserException(
-//					"Ambiguous source code (%d lexemes are applicable simultaneously) near position: %s",
-//					lexemes.size(), 
-//					scope.getCurrentPositionDescription(candidateRawSrc.length())
-//				);
-//		}
-
-		// try to analyze functions to find best fit
-		return null;
+		
+		if (null != ec.operator) {
+			if (!ec.operator.isStringRepresentationValid(candidateSrc)) {
+				throw new ParserException("Operator %s is not able to parse source near position: %s.", ec.lexeme.getLexemeId(),
+						src.getCurrentPositionDescription());
+			}
+			return ec;
+		} 
+		
+		throw new ParserException("Unknown lexeme %s is not able to be processed near position: %s.", ec.lexeme.getLexemeId(),
+				src.getCurrentPositionDescription());
 	}
 
 	public IVO parse(String src) throws ParserException {
-		return parse(new Scope(src));
+		Source scope = new Source(src);
+		
+		List<IVO> operands = new ArrayList<IVO>();
+		do{
+			final ExpressionComponent c = _parseComponent(scope);
+			if(null != c.operator) {
+				Source os = scope.copyForward();
+				do
+				{
+					ExpressionComponent oc = _parseComponent(os);
+					if (
+						null != oc.operator
+						&& 
+						oc.operator.getPriority().value <= c.operator.getPriority().value
+					)
+					{
+						os.currentPosition = os.startPosition;
+						break;
+					}
+					os = os.copyForward();
+				}while(!"".equals(os.str.substring(os.currentPosition).trim()));
+				
+				int startOperatorIdx = Math.min(c.startIdx, operands.stream().mapToInt(o->o.getComponentDesc().startIdx).min().orElse(Integer.MAX_VALUE));
+				
+				operands.add(parse(src.substring(c.startIdx + c.length, os.startPosition)));
+				
+				int endOperatorIdx = Math.max(c.startIdx + c.length, os.startPosition);
+				
+				IVO oevo = new OperatorEvaluationVO(
+						new ExpressionComponent(c.src, startOperatorIdx, endOperatorIdx, c.lexeme),
+						operands
+					);
+				operands.clear();
+				operands.add(oevo);
+				scope = os.copyForward();
+			}
+			else
+			{
+				if (null != c.typeDescriptor){
+					operands.add(new ImmutableVO(c));
+					scope = scope.copyForward();
+				}
+			}
+		}while(!"".equals(scope.str.substring(scope.currentPosition).trim()));
+		
+		if(operands.size() != 1)
+			throw new ParserException("Exactly 1 operand is expected as result or syntax expression. Real count is %d", operands.size());
+		
+		return operands.get(0);
 	}
 }

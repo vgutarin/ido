@@ -1,15 +1,15 @@
 package org.ido.syntax.vo;
 
-import org.ido.syntax.ITypeDescriptor;
+import org.ido.syntax.ExpressionComponent;
 import org.ido.syntax.ParserException;
 
 public class ImmutableVO extends VO {
 
 	private final Object _value;
-	public ImmutableVO(String src, ITypeDescriptor<?> typeDescriptor) throws ParserException {
-		super(src, typeDescriptor);
+	public ImmutableVO(ExpressionComponent component) throws ParserException {
+		super(component);
 		
-		_value = typeDescriptor.parseVo(src);
+		_value = getTypeDescriptor().parseVo(component.str);
 	}
 
 	@Override

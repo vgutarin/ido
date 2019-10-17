@@ -24,7 +24,7 @@ public class ParserTest {
 		assertNotNull(vo);
 		assertEquals(new Long(123), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
-		assertEquals("123", vo.getSrc());
+		assertEquals("123", vo.getComponentDesc().str);
 	}
 	
 	@Test
@@ -39,11 +39,11 @@ public class ParserTest {
 		assertNotNull(vo);
 		assertEquals(new Long(179), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
-		assertEquals("123 + 56", vo.getSrc());
+		assertEquals("123 + 56", vo.getComponentDesc().str);
 	}
 	
 	@Test
-	public void testLongsSubraction() throws SyntaxException {
+	public void testLongsSubtraction() throws SyntaxException {
 		final ITypeDescriptor<?> td = new LongTypeDescriptor();
 		final Parser p = new Parser(
 				Arrays.asList(td),
@@ -54,6 +54,23 @@ public class ParserTest {
 		assertNotNull(vo);
 		assertEquals(new Long(123), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
-		assertEquals("179 - 56", vo.getSrc());
+		assertEquals("179 - 56", vo.getComponentDesc().str);
+	}
+	
+	@Test
+	public void testLongsAdditionAndSubtraction() throws SyntaxException {
+		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		final Parser p = new Parser(
+				Arrays.asList(td),
+				Arrays.asList(
+					(IOperator) new Addition(),
+					(IOperator) new Subtraction())
+		);
+		
+		IVO vo = p.parse("50 + 179 - 56");
+		assertNotNull(vo);
+		assertEquals(new Long(173), vo.getValue());
+		assertSame(td, vo.getTypeDescriptor());
+		assertEquals("50 + 179 - 56", vo.getComponentDesc().str);
 	}
 }
