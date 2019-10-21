@@ -91,15 +91,13 @@ public class Parser {
 			final ExpressionComponent c = _parseComponent(scope);
 			if(null != c.operator) {
 				Source os = scope.copyForward();
-				do
-				{
+				do{
 					ExpressionComponent oc = _parseComponent(os);
 					if (
 						null != oc.operator
 						&& 
 						oc.operator.getPriority().value <= c.operator.getPriority().value
-					)
-					{
+					){
 						os.currentPosition = os.startPosition;
 						break;
 					}
@@ -119,9 +117,7 @@ public class Parser {
 				operands.clear();
 				operands.add(oevo);
 				scope = os.copyForward();
-			}
-			else
-			{
+			} else {
 				if (null != c.typeDescriptor){
 					operands.add(new ImmutableVO(c));
 					scope = scope.copyForward();
