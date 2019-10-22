@@ -8,6 +8,7 @@ import java.util.Arrays;
 import org.ido.syntax.operator.Addition;
 import org.ido.syntax.operator.Division;
 import org.ido.syntax.operator.Multiplication;
+import org.ido.syntax.operator.Remainder;
 import org.ido.syntax.operator.Subtraction;
 import org.ido.syntax.type.LongTypeDescriptor;
 import org.junit.Test;
@@ -152,6 +153,50 @@ public class ParserTest {
 		assertEquals(new Long(58), p.parse("50 + 179 /56 +5" ).getValue());
 		assertEquals(new Long(233), p.parse("50 - 1 + 56/56 *179 +5" ).getValue());
 		assertEquals(new Long(168), p.parse("179 /56 * 56" ).getValue());
+		
+	}
+	
+	@Test
+	public void testLongsRemainder() throws SyntaxException {
+		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		final Parser p = new Parser(
+				Arrays.asList(td),
+				Arrays.asList(
+						new Subtraction(),
+						new Multiplication(),
+						new Division(),
+						new Remainder())
+		);
+		
+		IVO vo = p.parse(" 179 %56");
+		assertNotNull(vo);
+		assertEquals(new Long(11), vo.getValue());
+		assertSame(td, vo.getTypeDescriptor());
+		assertEquals("179 %56", vo.getComponentDesc().str);
+	}
+	
+	@Test
+	public void testLongsAdditionAndRemainder() throws SyntaxException {
+		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		final Parser p = new Parser(
+				Arrays.asList(td),
+				Arrays.asList(
+					new Addition(),
+					new Subtraction(),
+					new Multiplication(),
+					new Division(),
+					new Remainder())
+		);
+		
+		IVO vo = p.parse("50 + 179 %56");
+		assertNotNull(vo);
+		assertEquals(new Long(61), vo.getValue());
+		assertSame(td, vo.getTypeDescriptor());
+		assertEquals("50 + 179 %56", vo.getComponentDesc().str);
+		assertEquals(vo.getValue(), p.parse("179%56+50").getValue());
+		assertEquals(new Long(66), p.parse("50 + 179 %56 +5" ).getValue());
+		assertEquals(new Long(55), p.parse("50 - 1 + 56/56 %179 +5" ).getValue());
+		assertEquals(new Long(112), p.parse(" 56%179 + 56" ).getValue());
 		
 	}
 }

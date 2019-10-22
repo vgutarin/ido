@@ -12,6 +12,7 @@ import org.ido.syntax.SyntaxException;
 import org.ido.syntax.operator.Addition;
 import org.ido.syntax.operator.Division;
 import org.ido.syntax.operator.Multiplication;
+import org.ido.syntax.operator.Remainder;
 import org.ido.syntax.operator.Subtraction;
 
 public class LongTypeDescriptor implements ITypeDescriptor<Long> {
@@ -75,6 +76,10 @@ public class LongTypeDescriptor implements ITypeDescriptor<Long> {
 		
 		if (operator instanceof Division) {
 			return firstOperand / secondOperand;
+		}
+		
+		if (operator instanceof Remainder) {
+			return firstOperand % secondOperand;
 		}
 		
 		throw new NotSupportedOperatorException("Type %s does not support operator %s", getLexemeId(), operator.getLexemeId());
