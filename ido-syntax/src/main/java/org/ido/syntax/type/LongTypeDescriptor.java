@@ -15,6 +15,7 @@ import org.ido.syntax.operator.Multiplication;
 import org.ido.syntax.operator.Remainder;
 import org.ido.syntax.operator.Subtraction;
 import org.ido.syntax.operator.UnaryMinus;
+import org.ido.syntax.operator.UnaryPlus;
 
 public class LongTypeDescriptor implements ITypeDescriptor<Long> {
 
@@ -65,6 +66,13 @@ public class LongTypeDescriptor implements ITypeDescriptor<Long> {
 			return - firstOperand;
 		}
 		
+		if (operator instanceof UnaryPlus) {
+			return firstOperand;
+		}
+		
+		if (2 != operands.size())
+			throw new NotSupportedOperatorException("Type %s does not support operator %s", getLexemeId(), operator.getLexemeId());
+		
 		Long secondOperand = castValue(operands.get(1));
 		
 		if (operator instanceof Addition) {
@@ -86,8 +94,6 @@ public class LongTypeDescriptor implements ITypeDescriptor<Long> {
 		if (operator instanceof Remainder) {
 			return firstOperand % secondOperand;
 		}
-		
-		
 		
 		throw new NotSupportedOperatorException("Type %s does not support operator %s", getLexemeId(), operator.getLexemeId());
 	}
