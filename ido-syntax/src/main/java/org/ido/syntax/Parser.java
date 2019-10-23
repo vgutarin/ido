@@ -43,9 +43,9 @@ public class Parser {
 		}
 	}
 	
-	private ExpressionComponent _parseComponent(Source src) throws ParserException {
+	private ExpressionComponent _parseComponent(Source src, final int leftOperandsCount) throws ParserException {
 		List<ILexeme> lexemes = new ArrayList<ILexeme>(_types);
-		lexemes.addAll(_operators);
+		lexemes.addAll(_operators.stream().filter(o-> o.leftOperandsCount() == leftOperandsCount).collect(Collectors.toList()));
 		final int startPosition = src.currentPosition;
 		_removeNotApplicable(src, lexemes);
 
@@ -88,25 +88,40 @@ public class Parser {
 		
 		List<IVO> operands = new ArrayList<IVO>();
 		do{
-			final ExpressionComponent c = _parseComponent(scope);
+			final ExpressionComponent c = _parseComponent(scope, operands.size());
 			if(null != c.operator) {
 				Source os = scope.copyForward();
+				int nextOperatorLeftOperandsCount = 0;
 				do{
-					ExpressionComponent oc = _parseComponent(os);
-					if (
-						null != oc.operator
-						&& 
-						oc.operator.getPriority().value <= c.operator.getPriority().value
-					){
-						os.currentPosition = os.startPosition;
-						break;
+					ExpressionComponent oc = _parseComponent(os, nextOperatorLeftOperandsCount);
+					if (null != oc.operator) {
+						nextOperatorLeftOperandsCount = 0;
+						if (
+							oc.operator.getPriority().value <= c.operator.getPriority().value
+						) {
+	
+							if(
+								oc.operator.getPriority().value == c.operator.getPriority().value
+								//&& operands.isEmpty()
+								&& 0 == c.operator.leftOperandsCount()
+								&& 0 == oc.operator.leftOperandsCount()
+							) {
+								// sequence of unary operators like " - - - 12345"
+							} else {
+								os.currentPosition = os.startPosition;
+								break;
+							}
+						}
+					} else {
+						if(0 == nextOperatorLeftOperandsCount) ++nextOperatorLeftOperandsCount;
 					}
 					os = os.copyForward();
-				}while(!"".equals(os.str.substring(os.currentPosition).trim()));
+				} while (!"".equals(os.str.substring(os.currentPosition).trim()));
 				
-				int startOperatorIdx = Math.min(c.startIdx, operands.stream().mapToInt(o->o.getComponentDesc().startIdx).min().orElse(Integer.MAX_VALUE));
+				final int startOperatorIdx = Math.min(c.startIdx, operands.stream().mapToInt(o->o.getComponentDesc().startIdx).min().orElse(Integer.MAX_VALUE));
 				
-				operands.add(parse(src.substring(c.startIdx + c.length, os.startPosition)));
+				final String operatorCandidate = src.substring(c.startIdx + c.length, os.startPosition);
+				operands.add(parse(operatorCandidate));
 				
 				int endOperatorIdx = Math.max(c.startIdx + c.length, os.startPosition);
 				
