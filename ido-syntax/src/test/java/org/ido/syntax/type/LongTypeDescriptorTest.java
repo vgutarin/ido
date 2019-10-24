@@ -1,9 +1,9 @@
 package org.ido.syntax.type;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.ido.syntax.ParserException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LongTypeDescriptorTest {
 
@@ -41,8 +41,11 @@ public class LongTypeDescriptorTest {
 		assertEquals(new Long(456), ltd.parseVo("456"));
 	}
 	
-	@Test(expected = ParserException.class)
+	@Test
 	public void testParseVo_Exception() throws ParserException {
-		ltd.parseVo("123d");
+		assertThrows(
+			ParserException.class,
+			() -> ltd.parseVo("123d"));
+		
 	}
 }

@@ -1,6 +1,6 @@
 package org.ido.syntax;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,7 +13,8 @@ import org.ido.syntax.operator.Subtraction;
 import org.ido.syntax.operator.UnaryMinus;
 import org.ido.syntax.operator.UnaryPlus;
 import org.ido.syntax.type.LongTypeDescriptor;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
 
 public class ParserBasedOnLongTypeTest {
 
