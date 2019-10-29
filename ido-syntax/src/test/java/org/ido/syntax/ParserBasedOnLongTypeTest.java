@@ -336,7 +336,7 @@ public class ParserBasedOnLongTypeTest {
 	}
 	
 	@Test
-	public void testLongsLongParentnessesInTheExpressions() throws SyntaxException {
+	public void testLongsParentnessesInTheExpressions() throws SyntaxException {
 		final ITypeDescriptor<?> td = new LongTypeDescriptor();
 		final Parser p = new Parser(
 				Arrays.asList(td),
@@ -365,5 +365,6 @@ public class ParserBasedOnLongTypeTest {
 		assertEquals(new Long(56), p.parse("56%-+(179 - 56)" ).getValue());
 		assertEquals(new Long(56), p.parse("56%-(179 - + - 56)" ).getValue());
 		assertEquals(new Long(56), p.parse("56%(-179 + + - - 56)" ).getValue());
+		assertEquals(new Long(320), p.parse("(177-179) * 10 * ((3 + 5) * -(3-1))" ).getValue());
 	}
 }
