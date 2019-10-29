@@ -56,7 +56,7 @@ public class LongTypeDescriptor implements ITypeDescriptor<Long> {
 		
 		if (operands.size() != operator.rightOperandsCount() + operator.leftOperandsCount()) {
 			throw new NotSupportedOperatorException(
-					"Type %s cannot apply operator %s using &d operands. Expected operands count is %d",
+					"Type %s cannot apply operator %s using %d operands. Expected operands count is %d",
 					getLexemeId(), operator.getLexemeId(), operands.size(), operator.rightOperandsCount() + operator.leftOperandsCount());
 		}
 		

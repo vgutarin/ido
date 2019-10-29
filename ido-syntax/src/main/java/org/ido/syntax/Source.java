@@ -1,10 +1,10 @@
 package org.ido.syntax;
 
-public class Source {
+class Source {
 
 	public final String str;
 	public final int startPosition;
-	public int currentPosition;
+	public int currentPosition, parentnessesOpenCount;
 
 	private Source(String str, int startPosition) {
 		this.str = str;
@@ -16,7 +16,9 @@ public class Source {
 	}
 
 	public Source copyForward() {
-		return new Source(str, currentPosition);
+		Source s = new Source(str, currentPosition);
+		s.parentnessesOpenCount = parentnessesOpenCount;
+		return s;
 	}
 
 	public String getCurrentPositionDescription() {

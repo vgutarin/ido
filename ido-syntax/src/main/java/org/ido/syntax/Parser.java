@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.ido.syntax.operator.ParenthesesClose;
+import org.ido.syntax.operator.ParenthesesOpen;
 import org.ido.syntax.vo.ImmutableVO;
 import org.ido.syntax.vo.OperatorEvaluationVO;
+import org.ido.syntax.vo.VOPriorityScope;
 
 public class Parser {
 
@@ -76,6 +79,16 @@ public class Parser {
 				throw new ParserException("Operator %s is not able to parse source near position: %s.", ec.lexeme.getLexemeId(),
 						src.getCurrentPositionDescription());
 			}
+			
+			if(ec.operator instanceof ParenthesesClose) {
+				if(0 > --src.parentnessesOpenCount) {
+					throw new ParserException("Closing parentheses %s is not expected near position: %s.", ec.lexeme.getLexemeId(),
+							src.getCurrentPositionDescription());
+				}
+			}else if(ec.operator instanceof ParenthesesOpen) {
+				++src.parentnessesOpenCount;
+			}
+			
 			return ec;
 		} 
 		
@@ -84,19 +97,21 @@ public class Parser {
 	}
 
 	public IVO parse(String src) throws ParserException {
-		Source scope = new Source(src);
+		Source source = new Source(src);
 		
 		List<IVO> operands = new ArrayList<IVO>();
 		do{
-			final ExpressionComponent c = _parseComponent(scope, operands.size());
+			final ExpressionComponent c = _parseComponent(source, operands.size());
 			if(null != c.operator) {
-				Source os = scope.copyForward();
+				Source os = source.copyForward();
 				int nextOperatorLeftOperandsCount = 0;
 				do{
 					ExpressionComponent oc = _parseComponent(os, nextOperatorLeftOperandsCount);
 					if (null != oc.operator) {
-						nextOperatorLeftOperandsCount = 0;
+						nextOperatorLeftOperandsCount = 0 == oc.operator.rightOperandsCount() /*instanceof ParenthesesClose*/ ? 1 : 0;		
 						if (
+							0 == os.parentnessesOpenCount
+							&&
 							oc.operator.getPriority().value <= c.operator.getPriority().value
 						) {
 	
@@ -108,7 +123,7 @@ public class Parser {
 							) {
 								// sequence of unary operators like " - - - 12345"
 							} else {
-								os.currentPosition = os.startPosition;
+								if (!(oc.operator instanceof ParenthesesClose)) os.currentPosition = os.startPosition;
 								break;
 							}
 						}
@@ -118,27 +133,38 @@ public class Parser {
 					os = os.copyForward();
 				} while (!"".equals(os.str.substring(os.currentPosition).trim()));
 				
-				final int startOperatorIdx = Math.min(c.startIdx, operands.stream().mapToInt(o->o.getComponentDesc().startIdx).min().orElse(Integer.MAX_VALUE));
 				
-				final String operatorCandidate = src.substring(c.startIdx + c.length, os.startPosition);
-				operands.add(parse(operatorCandidate));
+				final String operandCandidate = src.substring(c.startIdx + c.length, os.startPosition);
+				IVO ivo = parse(operandCandidate);
 				
-				int endOperatorIdx = Math.max(c.startIdx + c.length, os.startPosition);
-				
-				IVO oevo = new OperatorEvaluationVO(
-						new ExpressionComponent(c.src, startOperatorIdx, endOperatorIdx, c.lexeme),
-						operands
+				if (c.operator instanceof ParenthesesOpen) {
+					ivo = new VOPriorityScope(
+							new ExpressionComponent(
+									source,
+									c.src.startPosition,
+									os.currentPosition - c.src.startPosition,
+									c.operator),
+							ivo
 					);
-				operands.clear();
-				operands.add(oevo);
-				scope = os.copyForward();
+				} else {					
+					final int startOperatorIdx = Math.min(c.startIdx, operands.stream().mapToInt(o->o.getComponentDesc().startIdx).min().orElse(Integer.MAX_VALUE));
+					int endOperatorIdx = Math.max(c.startIdx + c.length, os.startPosition);
+					operands.add(ivo);
+					ivo = new OperatorEvaluationVO(
+							new ExpressionComponent(c.src, startOperatorIdx, endOperatorIdx, c.lexeme),
+							operands
+						);
+					operands.clear();
+				}
+				operands.add(ivo);
+				source = os.copyForward();
 			} else {
 				if (null != c.typeDescriptor){
 					operands.add(new ImmutableVO(c));
-					scope = scope.copyForward();
+					source = source.copyForward();
 				}
 			}
-		}while(!"".equals(scope.str.substring(scope.currentPosition).trim()));
+		}while(!"".equals(source.str.substring(source.currentPosition).trim()));
 		
 		if(operands.size() != 1)
 			throw new ParserException("Exactly 1 operand is expected as result or syntax expression. Real count is %d", operands.size());
