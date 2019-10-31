@@ -22,7 +22,7 @@ public class OperatorTest {
 	public void testOperator_String() {
 		Operator o =  new OperatorImpl("+");
 		
-		assertEquals("operator.OperatorImpl", o.getLexemeId());
+		assertEquals(o.getClass().getCanonicalName(), o.getLexemeId());
 		assertTrue(o.isStringRepresentationStartsWith("+"));
 		assertTrue(o.isStringRepresentationValid("+"));
 		assertFalse(o.isStringRepresentationStartsWith(" +"));
@@ -37,7 +37,7 @@ public class OperatorTest {
 	public void testOperator_String_True() {
 		Operator o =  new OperatorImpl("*");
 		
-		assertEquals("operator.OperatorImpl", o.getLexemeId());
+		assertEquals(o.getClass().getCanonicalName(), o.getLexemeId());
 		assertTrue(o.isStringRepresentationStartsWith("*"));
 		assertTrue(o.isStringRepresentationValid("*"));
 		assertFalse(o.isStringRepresentationStartsWith(" *"));
@@ -52,7 +52,7 @@ public class OperatorTest {
 	public void testOperator_String_False() {
 		Operator o =  new OperatorImpl("++");
 		
-		assertEquals("operator.OperatorImpl", o.getLexemeId());
+		assertEquals(o.getClass().getCanonicalName(), o.getLexemeId());
 		assertTrue(o.isStringRepresentationStartsWith("+"));
 		assertFalse(o.isStringRepresentationValid("+"));
 		assertTrue(o.isStringRepresentationValid("++"));

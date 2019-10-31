@@ -17,14 +17,11 @@ import org.ido.syntax.operator.Subtraction;
 import org.ido.syntax.operator.UnaryMinus;
 import org.ido.syntax.operator.UnaryPlus;
 
-public class LongTypeDescriptor implements ITypeDescriptor<Long> {
+public class LongTypeDescriptor extends TypeDescriptor<Long> {
 
 	private final Pattern _pattern = Pattern.compile("\\d+");
 
-	public String getLexemeId() {
-		return "Long";
-	}
-
+	@Override
 	public boolean isCompartible(ITypeDescriptor<?> type) {
 		return type instanceof LongTypeDescriptor;
 	}
@@ -34,10 +31,12 @@ public class LongTypeDescriptor implements ITypeDescriptor<Long> {
 		return (Long) value.getValue();
 	}
 
+	@Override
 	public boolean isStringRepresentationStartsWith(String src) {
 		return isStringRepresentationValid(src);
 	}
 
+	@Override
 	public boolean isStringRepresentationValid(String src) {
 		return _pattern.matcher(src).matches();
 	}
@@ -53,12 +52,6 @@ public class LongTypeDescriptor implements ITypeDescriptor<Long> {
 	
 	@Override
 	public Long apply(IOperator operator, List<IVO> operands) throws SyntaxException {
-		
-		if (operands.size() != operator.rightOperandsCount() + operator.leftOperandsCount()) {
-			throw new NotSupportedOperatorException(
-					"Type %s cannot apply operator %s using %d operands. Expected operands count is %d",
-					getLexemeId(), operator.getLexemeId(), operands.size(), operator.rightOperandsCount() + operator.leftOperandsCount());
-		}
 		
 		Long firstOperand = castValue(operands.get(0));
 		

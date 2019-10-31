@@ -1,22 +1,22 @@
 package org.ido.syntax;
 
-class Source {
+class Position {
 
 	public final String str;
-	public final int startPosition;
-	public int currentPosition, parentnessesOpenCount;
+	public final int start;
+	public int current, parentnessesOpenCount;
 
-	private Source(String str, int startPosition) {
+	private Position(String str, int startPosition) {
 		this.str = str;
-		this.startPosition = currentPosition = startPosition;
+		this.start = current = startPosition;
 	}
 
-	public Source(String src) {
+	public Position(String src) {
 		this(src, 0);
 	}
 
-	public Source copyForward() {
-		Source s = new Source(str, currentPosition);
+	public Position copyForward() {
+		Position s = new Position(str, current);
 		s.parentnessesOpenCount = parentnessesOpenCount;
 		return s;
 	}
@@ -24,14 +24,14 @@ class Source {
 	public String getCurrentPositionDescription() {
 		int substrLength = 10;
 
-		int startIdx = currentPosition - substrLength;
+		int startIdx = current - substrLength;
 
 		if (startIdx < 0)
 			startIdx = 0;
 		if (startIdx + substrLength > str.length())
 			substrLength = str.length() - startIdx;
 
-		return String.format("%d. String: %s%s%s", currentPosition, startIdx > 0 ? "..." : "",
+		return String.format("%d. String: %s%s%s", current, startIdx > 0 ? "..." : "",
 				str.substring(startIdx, startIdx + substrLength),
 				startIdx + substrLength < str.length() - 1 ? "..." : "");
 	}

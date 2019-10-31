@@ -5,12 +5,11 @@ import org.ido.syntax.OperatorPriority;
 
 public abstract class Operator implements IOperator {
 
-	private final String _lexeme, _lexemeId;
+	private final String _lexeme;
 	private final OperatorPriority _priority;
 	
 	protected Operator(OperatorPriority priority, String lexeme) {
 		_lexeme = lexeme;
-		_lexemeId = "operator." + getClass().getSimpleName();
 		_priority = priority;
 	}
 
@@ -20,8 +19,8 @@ public abstract class Operator implements IOperator {
 	}
 	
 	@Override
-	public String getLexemeId() {
-		return _lexemeId;
+	public final String getLexemeId() {
+		return getClass().getCanonicalName();
 	}
 
 	@Override
@@ -43,4 +42,5 @@ public abstract class Operator implements IOperator {
 	public int rightOperandsCount() {
 		return 1;
 	}
+	
 }

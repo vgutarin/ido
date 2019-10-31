@@ -7,6 +7,7 @@ import org.ido.syntax.ExpressionComponent;
 import org.ido.syntax.IOperator;
 import org.ido.syntax.ITypeDescriptor;
 import org.ido.syntax.IVO;
+import org.ido.syntax.NotSupportedOperatorException;
 import org.ido.syntax.ParserException;
 import org.ido.syntax.SyntaxException;
 
@@ -26,6 +27,15 @@ public class OperatorEvaluationVO extends VO {
 
 	@Override
 	public Object getValue() throws SyntaxException {
+		if (
+				_operands.size() != _operator.rightOperandsCount() +  _operator.leftOperandsCount()
+				||
+				_operands.isEmpty()
+			) {
+				throw new NotSupportedOperatorException(
+						"Cannot apply operator %s using %d operands. Expected operands count is: %d",
+						_operator.getLexemeId(), _operands.size(), _operator.rightOperandsCount() + _operator.leftOperandsCount());
+			}
 		return getTypeDescriptor().apply(_operator, _operands);
 	}
 
