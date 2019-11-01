@@ -2,18 +2,18 @@ package org.ido.syntax.vo;
 
 import org.ido.syntax.ExpressionComponent;
 import org.ido.syntax.ITypeDescriptor;
-import org.ido.syntax.IVO;
+import org.ido.syntax.IVo;
 
-public abstract class VO implements IVO {
+public abstract class Vo implements IVo {
 	private final ExpressionComponent  _component;
 	private final ITypeDescriptor<?> _typeDescriptor;
 	
-	protected VO(ExpressionComponent component, ITypeDescriptor<?> typeDescriptor) {
+	protected Vo(ExpressionComponent component, ITypeDescriptor<?> typeDescriptor) {
 		//TODO validate typeDescriptor is not null
 		_component = component;
 		_typeDescriptor = typeDescriptor;
 	}
-	protected VO(ExpressionComponent component) {
+	protected Vo(ExpressionComponent component) {
 		this(component, component.typeDescriptor);
 	}
 

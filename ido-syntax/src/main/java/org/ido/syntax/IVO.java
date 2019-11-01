@@ -7,7 +7,7 @@ package org.ido.syntax;
  * Requiremtns
  * 		1. Must provide Result type (INT, Decimal, String, ) - 
  */
-public interface IVO {
+public interface IVo {
 	ITypeDescriptor<?> getTypeDescriptor();
 	Object getValue() throws SyntaxException;
 	ExpressionComponent getComponentDesc();

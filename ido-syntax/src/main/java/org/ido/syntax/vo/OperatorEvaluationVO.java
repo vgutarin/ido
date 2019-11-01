@@ -6,22 +6,22 @@ import java.util.List;
 import org.ido.syntax.ExpressionComponent;
 import org.ido.syntax.IOperator;
 import org.ido.syntax.ITypeDescriptor;
-import org.ido.syntax.IVO;
+import org.ido.syntax.IVo;
 import org.ido.syntax.NotSupportedOperatorException;
 import org.ido.syntax.ParserException;
 import org.ido.syntax.SyntaxException;
 
-public class OperatorEvaluationVO extends VO {
+public class OperatorEvaluationVo extends Vo {
 
 	
 	// TODO detect immutable
 	
-	private final List<IVO> _operands;
+	private final List<IVo> _operands;
 	private final IOperator _operator;
-	public OperatorEvaluationVO(ExpressionComponent component, List<IVO> operands) throws ParserException {
+	public OperatorEvaluationVo(ExpressionComponent component, List<IVo> operands) throws ParserException {
 		super(component, _typeDescriptor(operands));
 		//TODO check not nulls
-		_operands = new ArrayList<IVO>(operands);
+		_operands = new ArrayList<IVo>(operands);
 		_operator = component.operator;
 	}
 
@@ -44,7 +44,7 @@ public class OperatorEvaluationVO extends VO {
 		return true;
 	}
 	
-	private static ITypeDescriptor<?> _typeDescriptor(List<IVO> operands) {
+	private static ITypeDescriptor<?> _typeDescriptor(List<IVo> operands) {
 		// TODO cast types
 		// TODO validate operator is applicable ()
 		return operands.get(0).getTypeDescriptor();

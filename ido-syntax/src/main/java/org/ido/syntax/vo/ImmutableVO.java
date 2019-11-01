@@ -3,10 +3,10 @@ package org.ido.syntax.vo;
 import org.ido.syntax.ExpressionComponent;
 import org.ido.syntax.ParserException;
 
-public class ImmutableVO extends VO {
+public class ImmutableVo extends Vo {
 
 	private final Object _value;
-	public ImmutableVO(ExpressionComponent component) throws ParserException {
+	public ImmutableVo(ExpressionComponent component) throws ParserException {
 		super(component);
 		
 		_value = getTypeDescriptor().parseVo(component.str);

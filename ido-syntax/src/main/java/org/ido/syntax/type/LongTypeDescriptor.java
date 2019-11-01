@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import org.ido.syntax.IOperator;
 import org.ido.syntax.ITypeDescriptor;
-import org.ido.syntax.IVO;
+import org.ido.syntax.IVo;
 import org.ido.syntax.NotSupportedOperatorException;
 import org.ido.syntax.ParserException;
 import org.ido.syntax.SyntaxException;
@@ -27,7 +27,7 @@ public class LongTypeDescriptor extends TypeDescriptor<Long> {
 	}
 
 	@Override
-	public Long castValue(IVO value) throws SyntaxException {
+	public Long castValue(IVo value) throws SyntaxException {
 		return (Long) value.getValue();
 	}
 
@@ -51,7 +51,7 @@ public class LongTypeDescriptor extends TypeDescriptor<Long> {
 	}
 	
 	@Override
-	public Long apply(IOperator operator, List<IVO> operands) throws SyntaxException {
+	public Long apply(IOperator operator, List<IVo> operands) throws SyntaxException {
 		
 		Long firstOperand = castValue(operands.get(0));
 		

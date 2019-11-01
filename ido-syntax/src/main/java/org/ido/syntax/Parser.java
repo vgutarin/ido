@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ido.syntax.vo.ImmutableVO;
-import org.ido.syntax.vo.OperatorEvaluationVO;
-import org.ido.syntax.vo.ScopeVO;
+import org.ido.syntax.vo.ImmutableVo;
+import org.ido.syntax.vo.OperatorEvaluationVo;
+import org.ido.syntax.vo.ScopeVo;
 
 public class Parser {
 
@@ -96,7 +96,7 @@ public class Parser {
 		return ec;
 	}
 
-	private Position _parseOperator(final Position source, final ExpressionComponent c, List<IVO> operands)  throws ParserException {
+	private Position _parseOperator(final Position source, final ExpressionComponent c, List<IVo> operands)  throws ParserException {
 		Position os = source.copyForward();
 		int nextOperatorLeftOperandsCount = 0;
 		do {
@@ -127,12 +127,12 @@ public class Parser {
 		
 		
 		final String operandCandidate = source.str.substring(c.startIdx + c.length, os.start);
-		IVO ivo = parse(operandCandidate);
+		IVo ivo = parse(operandCandidate);
 					
 		final int startOperatorIdx = Math.min(c.startIdx, operands.stream().mapToInt(o->o.getComponentDesc().startIdx).min().orElse(Integer.MAX_VALUE));
 		int endOperatorIdx = Math.max(c.startIdx + c.length, os.start);
 		operands.add(ivo);
-		ivo = new OperatorEvaluationVO(
+		ivo = new OperatorEvaluationVo(
 				new ExpressionComponent(c.src, startOperatorIdx, endOperatorIdx, c.lexeme),
 				operands
 			);
@@ -142,20 +142,20 @@ public class Parser {
 		return os;
 	}
 	
-	public IVO parse(String src) throws ParserException {
+	public IVo parse(String src) throws ParserException {
 		Position position = new Position(src);
 		
-		List<IVO> operands = new ArrayList<IVO>();
+		List<IVo> operands = new ArrayList<IVo>();
 		do {
 			final ExpressionComponent c = _parseComponent(position, operands.size());
 			if (null != c.operator) {
 				position = _parseOperator(position, c, operands);
 			} else if (null != c.typeDescriptor) {
-				operands.add(new ImmutableVO(c));
+				operands.add(new ImmutableVo(c));
 				position = position.copyForward();
 			} else if (null != c.scope) {
 				operands.add(
-						new ScopeVO(
+						new ScopeVo(
 								c, 
 								parse(c.scope.strip(c.str))
 						)
