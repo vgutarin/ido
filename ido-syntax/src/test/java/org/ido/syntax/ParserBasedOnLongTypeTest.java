@@ -8,8 +8,6 @@ import java.util.Arrays;
 import org.ido.syntax.operator.Addition;
 import org.ido.syntax.operator.Division;
 import org.ido.syntax.operator.Multiplication;
-import org.ido.syntax.operator.ParenthesesClose;
-import org.ido.syntax.operator.ParenthesesOpen;
 import org.ido.syntax.operator.Remainder;
 import org.ido.syntax.operator.Subtraction;
 import org.ido.syntax.operator.UnaryMinus;
@@ -322,10 +320,7 @@ public class ParserBasedOnLongTypeTest {
 						new Remainder(),
 						new UnaryMinus(),
 						new UnaryPlus()
-//						,
-//						new ParenthesesOpen(),
-//						new ParenthesesClose()
-						)
+				)
 		);
 		
 		IVO vo = p.parse(" (+- 179)");
@@ -350,10 +345,7 @@ public class ParserBasedOnLongTypeTest {
 					new Remainder(),
 					new UnaryMinus(),
 					new UnaryPlus()
-//					,
-//					new ParenthesesOpen(),
-//					new ParenthesesClose()
-					)
+				)
 		);
 		
 		IVO vo = p.parse(" - -(+50 + +179) %56");

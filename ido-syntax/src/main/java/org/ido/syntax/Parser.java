@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.ido.syntax.operator.ParenthesesClose;
-import org.ido.syntax.operator.ParenthesesOpen;
 import org.ido.syntax.vo.ImmutableVO;
 import org.ido.syntax.vo.OperatorEvaluationVO;
 import org.ido.syntax.vo.ScopeVO;
@@ -83,15 +81,6 @@ public class Parser {
 						src.toString());
 			}
 			
-			if (ec.operator instanceof ParenthesesClose) {
-				if(0 > --src.parentnessesOpenCount) {
-					throw new ParserException("Closing parentheses %s is not expected near position: %s.", ec.lexeme.getLexemeId(),
-							src.toString());
-				}
-			} else if(ec.operator instanceof ParenthesesOpen) {
-				++src.parentnessesOpenCount;
-			}
-			
 			return ec;
 		} 
 		
@@ -115,8 +104,6 @@ public class Parser {
 			if (null != oc.operator) {
 				nextOperatorLeftOperandsCount = 0 == oc.operator.rightOperandsCount() /*instanceof ParenthesesClose*/ ? 1 : 0;		
 				if (
-					0 == os.parentnessesOpenCount
-					&&
 					oc.operator.getPriority().value <= c.operator.getPriority().value
 				) {
 
@@ -128,7 +115,7 @@ public class Parser {
 					) {
 						// sequence of unary operators like " - - - 12345"
 					} else {
-						if (!(oc.operator instanceof ParenthesesClose)) os.current = os.start;
+						os.current = os.start;
 						break;
 					}
 				}
@@ -141,26 +128,15 @@ public class Parser {
 		
 		final String operandCandidate = source.str.substring(c.startIdx + c.length, os.start);
 		IVO ivo = parse(operandCandidate);
-		
-		if (c.operator instanceof ParenthesesOpen) {
-			ivo = new ScopeVO(
-					new ExpressionComponent(
-							source,
-							c.src.start,
-							os.current - c.src.start,
-							c.operator),
-					ivo
+					
+		final int startOperatorIdx = Math.min(c.startIdx, operands.stream().mapToInt(o->o.getComponentDesc().startIdx).min().orElse(Integer.MAX_VALUE));
+		int endOperatorIdx = Math.max(c.startIdx + c.length, os.start);
+		operands.add(ivo);
+		ivo = new OperatorEvaluationVO(
+				new ExpressionComponent(c.src, startOperatorIdx, endOperatorIdx, c.lexeme),
+				operands
 			);
-		} else {					
-			final int startOperatorIdx = Math.min(c.startIdx, operands.stream().mapToInt(o->o.getComponentDesc().startIdx).min().orElse(Integer.MAX_VALUE));
-			int endOperatorIdx = Math.max(c.startIdx + c.length, os.start);
-			operands.add(ivo);
-			ivo = new OperatorEvaluationVO(
-					new ExpressionComponent(c.src, startOperatorIdx, endOperatorIdx, c.lexeme),
-					operands
-				);
-			operands.clear();
-		}
+		operands.clear();
 		operands.add(ivo);
 		
 		return os;

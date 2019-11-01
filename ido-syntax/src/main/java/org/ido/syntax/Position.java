@@ -4,7 +4,7 @@ class Position {
 
 	public final String str;
 	public final int start;
-	public int current, parentnessesOpenCount;
+	public int current;
 
 	private Position(String str, int startPosition) {
 		this.str = str;
@@ -17,7 +17,6 @@ class Position {
 
 	public Position copyForward() {
 		Position s = new Position(str, current);
-		s.parentnessesOpenCount = parentnessesOpenCount;
 		return s;
 	}
 
