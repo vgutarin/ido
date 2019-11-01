@@ -31,11 +31,11 @@ public class OperatorEvaluationVO extends VO {
 				_operands.size() != _operator.rightOperandsCount() +  _operator.leftOperandsCount()
 				||
 				_operands.isEmpty()
-			) {
+		) {
 				throw new NotSupportedOperatorException(
 						"Cannot apply operator %s using %d operands. Expected operands count is: %d",
 						_operator.getLexemeId(), _operands.size(), _operator.rightOperandsCount() + _operator.leftOperandsCount());
-			}
+		}
 		return getTypeDescriptor().apply(_operator, _operands);
 	}
 

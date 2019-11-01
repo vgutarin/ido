@@ -9,6 +9,7 @@ public class ExpressionComponent {
 
 	public final ITypeDescriptor<?> typeDescriptor;
 	public final IOperator operator;
+	public final Scope scope;
 
 	public ExpressionComponent(Position src, int startIdx, int length, ILexeme lexeme) {
 		this.src = src;
@@ -18,6 +19,7 @@ public class ExpressionComponent {
 		this.lexeme = lexeme;
 		typeDescriptor = this.lexeme instanceof ITypeDescriptor<?> ? (ITypeDescriptor<?>) this.lexeme : null;
 		operator = this.lexeme instanceof IOperator ? (IOperator) this.lexeme : null;
+		scope = this.lexeme instanceof Scope ? (Scope) this.lexeme : null;
 	}
 
 }

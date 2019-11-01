@@ -5,11 +5,11 @@ import org.ido.syntax.ITypeDescriptor;
 import org.ido.syntax.IVO;
 import org.ido.syntax.SyntaxException;
 
-public class VOPriorityScope implements IVO {
+public class ScopeVO implements IVO {
 	private final ExpressionComponent  _component;
 	private final IVO _vo;
 	
-	public VOPriorityScope(ExpressionComponent component, IVO vo) {
+	public ScopeVO(ExpressionComponent component, IVO vo) {
 		_component = component;
 		_vo = vo;
 	}

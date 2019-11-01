@@ -321,9 +321,11 @@ public class ParserBasedOnLongTypeTest {
 						new Division(),
 						new Remainder(),
 						new UnaryMinus(),
-						new UnaryPlus(),
-						new ParenthesesOpen(),
-						new ParenthesesClose())
+						new UnaryPlus()
+//						,
+//						new ParenthesesOpen(),
+//						new ParenthesesClose()
+						)
 		);
 		
 		IVO vo = p.parse(" (+- 179)");
@@ -347,9 +349,11 @@ public class ParserBasedOnLongTypeTest {
 					new Division(),
 					new Remainder(),
 					new UnaryMinus(),
-					new UnaryPlus(),
-					new ParenthesesOpen(),
-					new ParenthesesClose())
+					new UnaryPlus()
+//					,
+//					new ParenthesesOpen(),
+//					new ParenthesesClose()
+					)
 		);
 		
 		IVO vo = p.parse(" - -(+50 + +179) %56");

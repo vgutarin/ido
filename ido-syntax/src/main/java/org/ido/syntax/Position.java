@@ -21,7 +21,7 @@ class Position {
 		return s;
 	}
 
-	public String getCurrentPositionDescription() {
+	public String toString() {
 		int substrLength = 10;
 
 		int startIdx = current - substrLength;
