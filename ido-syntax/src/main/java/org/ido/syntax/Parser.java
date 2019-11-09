@@ -13,14 +13,14 @@ public class Parser {
 	private final List<ILexeme> _types;
 	private final List<IOperator> _operators;
 
-	public Parser(List<ITypeDescriptor<?>> types, List<IOperator> functions) throws SyntaxException {
+	public Parser(List<ITypeDescriptor<?>> types, List<IOperator> operators) throws SyntaxException {
 
 		// TODO make sure typeId`s are unique
 		_types = new ArrayList<ILexeme>(types);
 		Scope parentheses = new Scope('(', ')');
 		_types.add(parentheses);
 		_types.add(parentheses.closeLexeme);
-		_operators = new ArrayList<IOperator>(functions);
+		_operators = new ArrayList<IOperator>(operators);
 	}
 
 	private <LT extends ILexeme> void _removeNotApplicable(Position src, List<LT> lexemes) {
@@ -63,7 +63,7 @@ public class Parser {
 		if (1 < lexemes.size())
 			throw new ParserException(
 					"Ambiguous source code (%s lexemes are applicable simultaneously) near position: %s",
-					String.join(", ", lexemes.stream().map(l -> l.getLexemeId()).collect(Collectors.toList())),
+					SyntaxException.toCsv(lexemes),
 					src.toString());
 
 		final ExpressionComponent ec = new ExpressionComponent(src, startPosition, src.current - startPosition, lexemes.get(0));

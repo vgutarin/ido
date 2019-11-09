@@ -1,5 +1,8 @@
 package org.ido.syntax;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 public class SyntaxException extends Exception {
 
 	private static final long serialVersionUID = 2019-10-12L;
@@ -25,5 +28,9 @@ public class SyntaxException extends Exception {
 	
 	public SyntaxException(String format, Object... objects) {
 		super(String.format(format, objects));
+	}
+	
+	public static <T extends ILexeme> String toCsv(Collection<T> lexemes) {
+		return String.join(", ", lexemes.stream().map(l -> l.getLexemeId()).collect(Collectors.toList()));
 	}
 }

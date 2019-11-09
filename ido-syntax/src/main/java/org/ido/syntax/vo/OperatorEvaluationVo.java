@@ -27,6 +27,7 @@ public class OperatorEvaluationVo extends Vo {
 
 	@Override
 	public Object getValue() throws SyntaxException {
+		//TODO deal with null values. (If any operand is null - result is null)
 		if (
 				_operands.size() != _operator.rightOperandsCount() +  _operator.leftOperandsCount()
 				||
