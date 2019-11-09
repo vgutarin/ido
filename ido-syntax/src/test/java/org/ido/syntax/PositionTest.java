@@ -40,5 +40,16 @@ class PositionTest {
 		assertEquals(4, copy.start);
 		assertEquals(4, copy.current);
 	}
+	
+	@Test
+	void testSkipWhiteCharacters() {
+		Position p = new Position (" \n\t");
+		p.skipWhiteCharacters();
+		assertEquals(3, p.current);
+		
+		p = new Position (" \n\t s");
+		p.skipWhiteCharacters();
+		assertEquals(4, p.current);
+	}
 
 }

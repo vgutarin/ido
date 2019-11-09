@@ -34,4 +34,8 @@ class Position {
 				str.substring(startIdx, startIdx + substrLength),
 				startIdx + substrLength < str.length() - 1 ? "..." : "");
 	}
+	
+	public void skipWhiteCharacters() {
+		while(str.length() > current && Character.isWhitespace(str.charAt(current))) ++current;
+	}
 }

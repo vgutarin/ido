@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.ido.syntax.function.Min;
 import org.ido.syntax.operator.Addition;
 import org.ido.syntax.operator.Division;
 import org.ido.syntax.operator.Multiplication;
@@ -362,5 +363,33 @@ public class ParserBasedOnLongTypeTest {
 		assertEquals(new Long(56), p.parse("56%-(179 - + - 56)" ).getValue());
 		assertEquals(new Long(56), p.parse("56%(-179 + + - - 56)" ).getValue());
 		assertEquals(new Long(320), p.parse("(177-179) * 10 * ((3 + 5) * -(3-1))" ).getValue());
+	}
+	
+	@Test
+	public void testLongsMinFunction() throws SyntaxException {
+		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		final Parser p = new Parser(
+				Arrays.asList(td),
+				Arrays.asList(
+					new Addition(),
+					new Subtraction(),
+					new Multiplication(),
+					new Division(),
+					new Remainder(),
+					new UnaryMinus(),
+					new UnaryPlus()
+				),
+				Arrays.asList( new Min())
+		);
+		
+		IVo vo = p.parse(" min(-1, - -(+50 + +179) %56)");
+		assertNotNull(vo);
+		assertEquals(new Long(-1), vo.getValue());
+		assertSame(td, vo.getTypeDescriptor());
+		assertEquals("min(-1, - -(+50 + +179) %56)", vo.getComponentDesc().str);
+		assertEquals(new Long(1), p.parse("min(1,22, 179%+(56 + +50))").getValue());
+		assertEquals(new Long(-100), p.parse("min(1,22, 179%+(56 + +50), -100)").getValue());
+		
+		assertEquals(new Long(-1000), p.parse("min(1,22, 179%+(56 + +50), -100, min(3, -1000,50))").getValue());
 	}
 }

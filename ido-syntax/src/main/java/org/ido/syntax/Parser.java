@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.ido.syntax.vo.FunctionEvaluationVo;
 import org.ido.syntax.vo.ImmutableVo;
 import org.ido.syntax.vo.OperatorEvaluationVo;
 import org.ido.syntax.vo.ScopeVo;
@@ -12,8 +13,9 @@ public class Parser {
 
 	private final List<ILexeme> _types;
 	private final List<IOperator> _operators;
+	private final List<IFunction> _functions;
 
-	public Parser(List<ITypeDescriptor<?>> types, List<IOperator> operators) throws SyntaxException {
+	public Parser(List<ITypeDescriptor<?>> types, List<IOperator> operators, List<IFunction> functions) throws SyntaxException {
 
 		// TODO make sure typeId`s are unique
 		_types = new ArrayList<ILexeme>(types);
@@ -21,18 +23,17 @@ public class Parser {
 		_types.add(parentheses);
 		_types.add(parentheses.closeLexeme);
 		_operators = new ArrayList<IOperator>(operators);
+		_functions = new ArrayList<IFunction>(functions);
 	}
-
+	public Parser(List<ITypeDescriptor<?>> types, List<IOperator> operators) throws SyntaxException {
+		this(types, operators, new ArrayList<IFunction>());
+	}
 	private <LT extends ILexeme> void _removeNotApplicable(Position src, List<LT> lexemes) {
-		int startIdx =  src.current;
+		src.skipWhiteCharacters();
+		final int firstNotWhiteIdx =  src.current;
 
 		for (; src.current < src.str.length(); ++src.current) {
-			final String stringToAnalyze = src.str.substring(startIdx, src.current + 1);
-			if ("".equals(stringToAnalyze.trim())) {
-				// skip leading white symbols;
-				++startIdx;
-				continue;
-			}
+			final String stringToAnalyze = src.str.substring(firstNotWhiteIdx, src.current + 1);
 
 			if (lexemes.stream().anyMatch(t -> t.isStringRepresentationStartsWith(stringToAnalyze))) {
 				lexemes.removeIf(t -> !t.isStringRepresentationStartsWith(stringToAnalyze));
@@ -42,13 +43,49 @@ public class Parser {
 			break;
 		}
 		
-		if (startIdx == src.current) {
+		if (firstNotWhiteIdx == src.current) {
 			lexemes.clear();
 		}
 	}
 	
+	private List<IVo> _parseFunctionArguments(Position src) throws ParserException {
+		
+		src.skipWhiteCharacters();
+		if (src.str.length() <= src.current || '(' != src.str.charAt(src.current))
+			throw new ParserException("Cannot parse source near position %s", src);
+		
+		++src.current;
+		src.skipWhiteCharacters();
+		int startVoIdx = src.current;
+		List<IVo> result = new ArrayList<IVo>();
+		
+		ExpressionComponent ecs = null;
+		while (src.str.length() > src.current && ')' != src.str.charAt(src.current)) {
+			ecs = _parseComponent(src, null == ecs || null != ecs.operator ? 0 : 1);
+			src.skipWhiteCharacters();
+			
+			if (src.str.length() > src.current && ',' == src.str.charAt(src.current)) {
+				result.add(parse(src.str.substring(startVoIdx, src.current)));
+				++src.current;
+				src.skipWhiteCharacters();
+				startVoIdx = src.current;
+				ecs = null;
+			}
+		}
+		
+		if(startVoIdx != src.current)
+			result.add(parse(src.str.substring(startVoIdx, src.current)));
+		
+		if (src.str.length() <= src.current || ')' != src.str.charAt(src.current))
+			throw new ParserException("Cannot parse source near position %s", src);
+		++src.current;
+		
+		return result;
+	}
+	
 	private ExpressionComponent _parseComponent(Position src, final int leftOperandsCount) throws ParserException {
 		List<ILexeme> lexemes = new ArrayList<ILexeme>(_types);
+		lexemes.addAll(_functions);
 		lexemes.addAll(_operators.stream().filter(o-> o.leftOperandsCount() == leftOperandsCount).collect(Collectors.toList()));
 		final int startPosition = src.current;
 		_removeNotApplicable(src, lexemes);
@@ -91,6 +128,13 @@ public class Parser {
 			}
 			
 			return new ExpressionComponent(src, startPosition, src.current - startPosition, ec.scope); 
+		}
+		
+		if (null != ec.function) {
+			List<IVo> fargvs = _parseFunctionArguments(src);
+			ExpressionComponent ecf  = new ExpressionComponent(ec.src, ec.startIdx, src.current - ec.startIdx, ec.lexeme);
+			ecf.functionArgs = fargvs;
+			return ecf;
 		}
 		
 		return ec;
@@ -160,6 +204,9 @@ public class Parser {
 								parse(c.scope.strip(c.str))
 						)
 				);
+				position = position.copyForward();
+			}else if (null != c.function) {
+				operands.add(new FunctionEvaluationVo(c, c.functionArgs));
 				position = position.copyForward();
 			} else {
 				throw new ParserException("Unexpected lexeme %s near position %s", c.lexeme.getLexemeId(), position.toString());

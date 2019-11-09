@@ -3,17 +3,19 @@ package org.ido.syntax.vo;
 import org.ido.syntax.ExpressionComponent;
 import org.ido.syntax.ITypeDescriptor;
 import org.ido.syntax.IVo;
+import org.ido.syntax.ParserException;
 
 public abstract class Vo implements IVo {
 	private final ExpressionComponent  _component;
 	private final ITypeDescriptor<?> _typeDescriptor;
 	
-	protected Vo(ExpressionComponent component, ITypeDescriptor<?> typeDescriptor) {
-		//TODO validate typeDescriptor is not null
+	protected Vo(ExpressionComponent component, ITypeDescriptor<?> typeDescriptor) throws ParserException {
 		_component = component;
+		if (null == _component) throw new ParserException("Component must be not null"); 
 		_typeDescriptor = typeDescriptor;
+		
 	}
-	protected Vo(ExpressionComponent component) {
+	protected Vo(ExpressionComponent component) throws ParserException {
 		this(component, component.typeDescriptor);
 	}
 
