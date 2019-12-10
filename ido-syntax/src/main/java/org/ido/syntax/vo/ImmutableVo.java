@@ -9,7 +9,7 @@ public class ImmutableVo extends Vo {
 	public ImmutableVo(ExpressionComponent component) throws ParserException {
 		super(component);
 		
-		_value = getTypeDescriptor().parseVo(component.str);
+		_value = getTypeDescriptor().parseValue(component.str);
 	}
 
 	@Override

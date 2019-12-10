@@ -36,16 +36,16 @@ public class LongTypeDescriptorTest {
 	}
 
 	@Test
-	public void testParseVo() throws ParserException {
-		assertEquals(new Long(123), ltd.parseVo("123"));
-		assertEquals(new Long(456), ltd.parseVo("456"));
+	public void testParseValue() throws ParserException {
+		assertEquals(new Long(123), ltd.parseValue("123"));
+		assertEquals(new Long(456), ltd.parseValue("456"));
 	}
 	
 	@Test
-	public void testParseVo_Exception() throws ParserException {
+	public void testParseValue_Exception() throws ParserException {
 		assertThrows(
 			ParserException.class,
-			() -> ltd.parseVo("123d"));
+			() -> ltd.parseValue("123d"));
 		
 	}
 }

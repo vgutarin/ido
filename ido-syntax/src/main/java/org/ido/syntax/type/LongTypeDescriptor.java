@@ -27,7 +27,7 @@ public class LongTypeDescriptor extends TypeDescriptor<Long> {
 	}
 
 	@Override
-	public Long castValue(IVo value) throws SyntaxException {
+	public Long castToValue(IVo value) throws SyntaxException {
 		return (Long) value.getValue();
 	}
 
@@ -42,7 +42,7 @@ public class LongTypeDescriptor extends TypeDescriptor<Long> {
 	}
 
 	@Override
-	public Object parseVo(String src) throws ParserException {
+	public Object parseValue(String src) throws ParserException {
 		try {
 			return Long.parseLong(src.trim());
 		} catch (Throwable e) {
@@ -53,7 +53,7 @@ public class LongTypeDescriptor extends TypeDescriptor<Long> {
 	@Override
 	public Long apply(IOperator operator, List<IVo> operands) throws SyntaxException {
 		
-		Long firstOperand = castValue(operands.get(0));
+		Long firstOperand = castToValue(operands.get(0));
 		
 		if (operator instanceof UnaryMinus) {
 			return - firstOperand;
@@ -66,7 +66,7 @@ public class LongTypeDescriptor extends TypeDescriptor<Long> {
 		if (2 != operands.size())
 			throw new NotSupportedOperatorException("Type %s does not support operator %s", getLexemeId(), operator.getLexemeId());
 		
-		Long secondOperand = castValue(operands.get(1));
+		Long secondOperand = castToValue(operands.get(1));
 		
 		if (operator instanceof Addition) {
 			return firstOperand + secondOperand;
