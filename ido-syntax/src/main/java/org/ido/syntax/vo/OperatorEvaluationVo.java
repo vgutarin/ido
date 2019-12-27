@@ -2,13 +2,12 @@ package org.ido.syntax.vo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.ido.syntax.ExpressionComponent;
 import org.ido.syntax.IOperator;
-import org.ido.syntax.ITypeDescriptor;
 import org.ido.syntax.IVo;
 import org.ido.syntax.NotSupportedOperatorException;
-import org.ido.syntax.ParserException;
 import org.ido.syntax.SyntaxException;
 
 public class OperatorEvaluationVo extends Vo {
@@ -18,8 +17,11 @@ public class OperatorEvaluationVo extends Vo {
 	
 	private final List<IVo> _operands;
 	private final IOperator _operator;
-	public OperatorEvaluationVo(ExpressionComponent component, List<IVo> operands) throws ParserException {
-		super(component, _typeDescriptor(operands));
+	public OperatorEvaluationVo(ExpressionComponent component, List<IVo> operands) throws SyntaxException {
+		super(
+				component,
+				component.operator.detectResultType(operands.stream().map(i->i.getTypeDescriptor()).collect(Collectors.toList()))
+		);
 		//TODO check not nulls
 		_operands = new ArrayList<IVo>(operands);
 		_operator = component.operator;
@@ -43,12 +45,6 @@ public class OperatorEvaluationVo extends Vo {
 	@Override
 	public boolean isMutable() {
 		return true;
-	}
-	
-	private static ITypeDescriptor<?> _typeDescriptor(List<IVo> operands) {
-		// TODO cast types
-		// TODO validate operator is applicable ()
-		return operands.get(0).getTypeDescriptor();
 	}
 
 }

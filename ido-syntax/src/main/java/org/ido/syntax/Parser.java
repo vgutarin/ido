@@ -48,7 +48,7 @@ public class Parser {
 		}
 	}
 	
-	private List<IVo> _parseFunctionArguments(Position src) throws ParserException {
+	private List<IVo> _parseFunctionArguments(Position src) throws SyntaxException {
 		
 		src.skipWhiteCharacters();
 		if (src.str.length() <= src.current || '(' != src.str.charAt(src.current))
@@ -83,7 +83,7 @@ public class Parser {
 		return result;
 	}
 	
-	private ExpressionComponent _parseComponent(Position src, final int leftOperandsCount) throws ParserException {
+	private ExpressionComponent _parseComponent(Position src, final int leftOperandsCount) throws SyntaxException {
 		List<ILexeme> lexemes = new ArrayList<ILexeme>(_types);
 		lexemes.addAll(_functions);
 		lexemes.addAll(_operators.stream().filter(o-> o.leftOperandsCount() == leftOperandsCount).collect(Collectors.toList()));
@@ -140,7 +140,7 @@ public class Parser {
 		return ec;
 	}
 
-	private Position _parseOperator(final Position source, final ExpressionComponent c, List<IVo> operands)  throws ParserException {
+	private Position _parseOperator(final Position source, final ExpressionComponent c, List<IVo> operands)  throws SyntaxException {
 		Position os = source.copyForward();
 		int nextOperatorLeftOperandsCount = 0;
 		do {
@@ -186,7 +186,7 @@ public class Parser {
 		return os;
 	}
 	
-	public IVo parse(String src) throws ParserException {
+	public IVo parse(String src) throws SyntaxException {
 		Position position = new Position(src);
 		
 		List<IVo> operands = new ArrayList<IVo>();

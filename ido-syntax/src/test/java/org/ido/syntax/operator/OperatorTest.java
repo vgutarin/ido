@@ -2,7 +2,11 @@ package org.ido.syntax.operator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+
+import org.ido.syntax.ITypeDescriptor;
 import org.ido.syntax.OperatorPriority;
+import org.ido.syntax.SyntaxException;
 import org.junit.jupiter.api.Test;
 
 public class OperatorTest {
@@ -15,6 +19,11 @@ public class OperatorTest {
 		
 		public OperatorImpl(String lexeme) {
 			this(OperatorPriority.Lowest, lexeme);
+		}
+
+		@Override
+		public ITypeDescriptor<?> detectResultType(List<ITypeDescriptor<?>> operands) throws SyntaxException {
+			return null;
 		}
 	}
 	
