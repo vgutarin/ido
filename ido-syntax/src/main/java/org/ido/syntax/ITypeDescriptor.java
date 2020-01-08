@@ -7,5 +7,5 @@ public interface ITypeDescriptor<T> extends ILexeme {
 	T castToValue(IVo value) throws SyntaxException;
 	boolean isStringRepresentationValid(String src);
 	Object parseValue(String src) throws ParserException;
-	T apply(IOperator operator, List<IVo> operands) throws SyntaxException;
+	OperatorLogic findLogic(IOperator operator, List<ITypeDescriptor<?>> operands) throws SyntaxException;
 }

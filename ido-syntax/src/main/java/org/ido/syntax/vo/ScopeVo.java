@@ -2,14 +2,14 @@ package org.ido.syntax.vo;
 
 import org.ido.syntax.ExpressionComponent;
 import org.ido.syntax.ITypeDescriptor;
-import org.ido.syntax.IVo;
+import org.ido.syntax.IVoComponent;
 import org.ido.syntax.SyntaxException;
 
-public class ScopeVo implements IVo {
+public class ScopeVo implements IVoComponent {
 	private final ExpressionComponent  _component;
-	private final IVo _vo;
+	private final IVoComponent _vo;
 	
-	public ScopeVo(ExpressionComponent component, IVo vo) {
+	public ScopeVo(ExpressionComponent component, IVoComponent vo) {
 		_component = component;
 		_vo = vo;
 	}

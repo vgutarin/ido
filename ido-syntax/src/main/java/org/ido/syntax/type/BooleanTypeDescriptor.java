@@ -5,7 +5,7 @@ import java.util.List;
 import org.ido.syntax.IOperator;
 import org.ido.syntax.ITypeDescriptor;
 import org.ido.syntax.IVo;
-import org.ido.syntax.NotSupportedOperatorException;
+import org.ido.syntax.OperatorLogic;
 import org.ido.syntax.ParserException;
 import org.ido.syntax.SyntaxException;
 
@@ -46,10 +46,9 @@ public class BooleanTypeDescriptor extends TypeDescriptor<Boolean> {
 	}
 
 	@Override
-	public Boolean apply(IOperator operator, List<IVo> operands) throws SyntaxException {
-
-		throw new NotSupportedOperatorException("Type %s does not support operator %s", getLexemeId(),
-				operator.getLexemeId());
+	public OperatorLogic findLogic(IOperator operator, List<ITypeDescriptor<?>> operands) throws SyntaxException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

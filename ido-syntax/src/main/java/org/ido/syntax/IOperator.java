@@ -7,5 +7,5 @@ public interface IOperator extends ILexeme {
 	OperatorPriority getPriority();
 	int leftOperandsCount();
 	int rightOperandsCount();
-	ITypeDescriptor<?> detectResultType(List<ITypeDescriptor<?>> operands) throws SyntaxException;
+	OperatorLogic getLogic(List<ITypeDescriptor<?>> operands) throws SyntaxException;
 }

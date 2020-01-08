@@ -9,7 +9,7 @@ public interface IFunction extends ILexeme {
 	
 	/**
 	 * Method must return result type if function is applicable to incoming arguments types descriptors.
-	 * Expectations are method will check both arguments types and arguments count and aguments order.
+	 * Expectations are method will check both arguments types and arguments count and arguments order.
 	 * Result of this method is expected to be deterministic.
 	 * <p>
 	 * If result type is not deterministic or arguments count|types do not match expectations - null must be returned  

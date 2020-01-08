@@ -1,6 +1,5 @@
 package org.ido.syntax.vo;
 
-import org.ido.syntax.ExpressionComponent;
 import org.ido.syntax.ITypeDescriptor;
 import org.ido.syntax.IVo;
 import org.ido.syntax.SyntaxException;
@@ -13,22 +12,22 @@ import org.ido.syntax.SyntaxException;
  */
 public class HoldVoValue implements IVo {
 
-	private final IVo _vo;
+	private final ITypeDescriptor<?> _typeDescriptor;
 	private final Object _value; 
+	
+	public HoldVoValue(ITypeDescriptor<?> typeDescriptor, Object value) throws SyntaxException {
+		_value = value;
+		_typeDescriptor = typeDescriptor;
+	}
+	
 	public HoldVoValue(IVo vo) throws SyntaxException {
-		_value = vo.getValue();
-		_vo = vo;
+		this(vo.getTypeDescriptor(), vo.getValue());
 	}
 
 	@Override
 	public ITypeDescriptor<?> getTypeDescriptor() {
-		return _vo.getTypeDescriptor();
+		return _typeDescriptor;
 	}
-
-	@Override
-	public ExpressionComponent getComponentDesc() {
-		return _vo.getComponentDesc();
-	}	
 
 	@Override
 	public Object getValue() throws SyntaxException {
@@ -36,13 +35,8 @@ public class HoldVoValue implements IVo {
 	}
 	
 	@Override
-	public boolean isMutable() {
-		return _vo.isMutable();
-	}
-	
-	@Override
 	public String toString()
 	{
-		return String.format("%s:%s", _vo.getTypeDescriptor().getLexemeId(), _value);
+		return String.format("%s:%s", _typeDescriptor.getLexemeId(), _value);
 	}
 }

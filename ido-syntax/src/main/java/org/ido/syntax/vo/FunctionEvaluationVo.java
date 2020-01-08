@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.ido.syntax.ExpressionComponent;
 import org.ido.syntax.IFunction;
 import org.ido.syntax.IVo;
+import org.ido.syntax.IVoComponent;
 import org.ido.syntax.ParserException;
 import org.ido.syntax.SyntaxException;
 
@@ -16,7 +17,7 @@ public class FunctionEvaluationVo extends Vo {
 	private final List<IVo> _arguments;
 	private final IFunction _function;
 	
-	public FunctionEvaluationVo(ExpressionComponent component, List<IVo> arguments) throws ParserException {
+	public FunctionEvaluationVo(ExpressionComponent component, List<IVoComponent> arguments) throws ParserException {
 		super(component, component.function.isApplicable(arguments.stream().map(a->a.getTypeDescriptor()).collect(Collectors.toList())));
 		//TODO check not nulls
 		_arguments = new ArrayList<IVo>(arguments);

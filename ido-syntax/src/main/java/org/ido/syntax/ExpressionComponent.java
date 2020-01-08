@@ -13,7 +13,7 @@ public class ExpressionComponent {
 	public final IOperator operator;
 	public final Scope scope;
 	public final IFunction function;
-	public List<IVo> functionArgs;
+	public List<IVoComponent> functionArgs;
 
 	public ExpressionComponent(Position src, int startIdx, int length, ILexeme lexeme) {
 		this.src = src;

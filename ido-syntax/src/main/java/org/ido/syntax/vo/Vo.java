@@ -2,10 +2,10 @@ package org.ido.syntax.vo;
 
 import org.ido.syntax.ExpressionComponent;
 import org.ido.syntax.ITypeDescriptor;
-import org.ido.syntax.IVo;
+import org.ido.syntax.IVoComponent;
 import org.ido.syntax.ParserException;
 
-public abstract class Vo implements IVo {
+public abstract class Vo implements IVoComponent {
 	private final ExpressionComponent  _component;
 	private final ITypeDescriptor<?> _typeDescriptor;
 	

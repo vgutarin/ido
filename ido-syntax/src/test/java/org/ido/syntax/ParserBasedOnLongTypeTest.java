@@ -27,7 +27,7 @@ public class ParserBasedOnLongTypeTest {
 				new ArrayList<IOperator>()
 		);
 		
-		IVo vo = p.parse(" 123 ");
+		IVoComponent vo = p.parse(" 123 ");
 		assertNotNull(vo);
 		assertEquals(new Long(123), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -42,7 +42,7 @@ public class ParserBasedOnLongTypeTest {
 				Arrays.asList((IOperator)( new Addition() ))
 		);
 		
-		IVo vo = p.parse(" 123 + 56");
+		IVoComponent vo = p.parse(" 123 + 56");
 		assertNotNull(vo);
 		assertEquals(new Long(179), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -57,7 +57,7 @@ public class ParserBasedOnLongTypeTest {
 				Arrays.asList((IOperator) new Subtraction())
 		);
 		
-		IVo vo = p.parse(" 179 - 56");
+		IVoComponent vo = p.parse(" 179 - 56");
 		assertNotNull(vo);
 		assertEquals(new Long(123), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -74,7 +74,7 @@ public class ParserBasedOnLongTypeTest {
 					(IOperator) new Subtraction())
 		);
 		
-		IVo vo = p.parse("50 + 179 - 56");
+		IVoComponent vo = p.parse("50 + 179 - 56");
 		assertNotNull(vo);
 		assertEquals(new Long(173), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -91,7 +91,7 @@ public class ParserBasedOnLongTypeTest {
 						new Multiplication())
 		);
 		
-		IVo vo = p.parse(" 179 *56");
+		IVoComponent vo = p.parse(" 179 *56");
 		assertNotNull(vo);
 		assertEquals(new Long(10024), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -109,7 +109,7 @@ public class ParserBasedOnLongTypeTest {
 					new Multiplication())
 		);
 		
-		IVo vo = p.parse("50 + 179 *56");
+		IVoComponent vo = p.parse("50 + 179 *56");
 		assertNotNull(vo);
 		assertEquals(new Long(10074), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -129,7 +129,7 @@ public class ParserBasedOnLongTypeTest {
 						new Division())
 		);
 		
-		IVo vo = p.parse(" 179 /56");
+		IVoComponent vo = p.parse(" 179 /56");
 		assertNotNull(vo);
 		assertEquals(new Long(3), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -148,7 +148,7 @@ public class ParserBasedOnLongTypeTest {
 					new Division())
 		);
 		
-		IVo vo = p.parse("50 + 179 /56");
+		IVoComponent vo = p.parse("50 + 179 /56");
 		assertNotNull(vo);
 		assertEquals(new Long(53), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -172,7 +172,7 @@ public class ParserBasedOnLongTypeTest {
 						new Remainder())
 		);
 		
-		IVo vo = p.parse(" 179 %56");
+		IVoComponent vo = p.parse(" 179 %56");
 		assertNotNull(vo);
 		assertEquals(new Long(11), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -192,7 +192,7 @@ public class ParserBasedOnLongTypeTest {
 					new Remainder())
 		);
 		
-		IVo vo = p.parse("50 + 179 %56");
+		IVoComponent vo = p.parse("50 + 179 %56");
 		assertNotNull(vo);
 		assertEquals(new Long(61), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -217,7 +217,7 @@ public class ParserBasedOnLongTypeTest {
 						new UnaryMinus())
 		);
 		
-		IVo vo = p.parse(" - 179");
+		IVoComponent vo = p.parse(" - 179");
 		assertNotNull(vo);
 		assertEquals(new Long(-179), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -240,7 +240,7 @@ public class ParserBasedOnLongTypeTest {
 					new UnaryMinus())
 		);
 		
-		IVo vo = p.parse(" - -50 + 179 %56");
+		IVoComponent vo = p.parse(" - -50 + 179 %56");
 		assertNotNull(vo);
 		assertEquals(new Long(61), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -269,7 +269,7 @@ public class ParserBasedOnLongTypeTest {
 						new UnaryPlus())
 		);
 		
-		IVo vo = p.parse(" +- 179");
+		IVoComponent vo = p.parse(" +- 179");
 		assertNotNull(vo);
 		assertEquals(new Long(-179), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -293,7 +293,7 @@ public class ParserBasedOnLongTypeTest {
 					new UnaryPlus())
 		);
 		
-		IVo vo = p.parse(" - -+50 + +179 %56");
+		IVoComponent vo = p.parse(" - -+50 + +179 %56");
 		assertNotNull(vo);
 		assertEquals(new Long(61), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -324,7 +324,7 @@ public class ParserBasedOnLongTypeTest {
 				)
 		);
 		
-		IVo vo = p.parse(" (+- 179)");
+		IVoComponent vo = p.parse(" (+- 179)");
 		assertNotNull(vo);
 		assertEquals(new Long(-179), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -349,7 +349,7 @@ public class ParserBasedOnLongTypeTest {
 				)
 		);
 		
-		IVo vo = p.parse(" - -(+50 + +179) %56");
+		IVoComponent vo = p.parse(" - -(+50 + +179) %56");
 		assertNotNull(vo);
 		assertEquals(new Long(5), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());
@@ -382,7 +382,7 @@ public class ParserBasedOnLongTypeTest {
 				Arrays.asList( new Min())
 		);
 		
-		IVo vo = p.parse(" min(-1, - -(+50 + +179) %56)");
+		IVoComponent vo = p.parse(" min(-1, - -(+50 + +179) %56)");
 		assertNotNull(vo);
 		assertEquals(new Long(-1), vo.getValue());
 		assertSame(td, vo.getTypeDescriptor());

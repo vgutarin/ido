@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import org.ido.syntax.IOperator;
 import org.ido.syntax.ITypeDescriptor;
 import org.ido.syntax.IVo;
-import org.ido.syntax.NotSupportedOperatorException;
+import org.ido.syntax.OperatorLogic;
 import org.ido.syntax.ParserException;
 import org.ido.syntax.SyntaxException;
 import org.ido.syntax.operator.Addition;
@@ -16,10 +16,82 @@ import org.ido.syntax.operator.Remainder;
 import org.ido.syntax.operator.Subtraction;
 import org.ido.syntax.operator.UnaryMinus;
 import org.ido.syntax.operator.UnaryPlus;
+import org.ido.syntax.vo.HoldVoValue;
 
 public class LongTypeDescriptor extends TypeDescriptor<Long> {
 
 	private final Pattern _pattern = Pattern.compile("\\d+");
+	
+	private final OperatorLogic
+		 _unaryMinus,
+		 _unaryPlus,
+		 _addition,
+		 _subtraction,
+		 _multiplication,
+		 _division,
+		 _remainder;
+	
+	public LongTypeDescriptor() {
+		_unaryMinus = new OperatorLogicOneArgument<Long, Long>(this, this) {
+			
+			@Override
+			protected Long logic(HoldVoValue v) throws SyntaxException {
+				return -castToValue(v);
+			}
+			
+		};
+		
+		_unaryPlus = new OperatorLogicOneArgument<Long, Long>(this, this) {
+			
+			@Override
+			protected Long logic(HoldVoValue v) throws SyntaxException {
+				return castToValue(v);
+			}
+			
+		};
+		
+		_addition = new OperatorLogicTwoArguments<Long, Long>(this, this) {
+			
+			@Override
+			protected Long logic(HoldVoValue v1, HoldVoValue v2) throws SyntaxException {
+				return castToValue(v1) + castToValue(v2);
+			}
+			
+		};
+		
+		_subtraction = new OperatorLogicTwoArguments<Long, Long>(this, this) {
+			
+			@Override
+			protected Long logic(HoldVoValue v1, HoldVoValue v2) throws SyntaxException {
+				return castToValue(v1) - castToValue(v2);
+			}
+			
+		};
+		
+		 _multiplication = new OperatorLogicTwoArguments<Long, Long>(this, this) {
+				
+			@Override
+			protected Long logic(HoldVoValue v1, HoldVoValue v2) throws SyntaxException {
+				return castToValue(v1) * castToValue(v2);
+			}
+		};
+		
+		 _division = new OperatorLogicTwoArguments<Long, Long>(this, this) {
+				
+			@Override
+			protected Long logic(HoldVoValue v1, HoldVoValue v2) throws SyntaxException {
+				return castToValue(v1) / castToValue(v2);
+			}
+		};
+		
+		 _remainder = new OperatorLogicTwoArguments<Long, Long>(this, this) {
+				
+			@Override
+			protected Long logic(HoldVoValue v1, HoldVoValue v2) throws SyntaxException {
+				return castToValue(v1) % castToValue(v2);
+			}
+		};
+	}
 
 	@Override
 	public boolean isCompartible(ITypeDescriptor<?> type) {
@@ -51,44 +123,44 @@ public class LongTypeDescriptor extends TypeDescriptor<Long> {
 	}
 	
 	@Override
-	public Long apply(IOperator operator, List<IVo> operands) throws SyntaxException {
-		
-		Long firstOperand = castToValue(operands.get(0));
-		
-		if (operator instanceof UnaryMinus) {
-			return - firstOperand;
-		}
-		
-		if (operator instanceof UnaryPlus) {
-			return firstOperand;
+	public OperatorLogic findLogic(IOperator operator, List<ITypeDescriptor<?>> operands) throws SyntaxException {
+		if (operands.stream().anyMatch(t -> !(t instanceof LongTypeDescriptor))) return null;
+		if (1 == operands.size())
+		{
+			if (operator instanceof UnaryMinus) {
+				return _unaryMinus;
+			}
+			
+			if (operator instanceof UnaryPlus) {
+				return _unaryPlus;
+			}
 		}
 		
 		if (2 != operands.size())
-			throw new NotSupportedOperatorException("Type %s does not support operator %s", getLexemeId(), operator.getLexemeId());
+			return null;
 		
-		Long secondOperand = castToValue(operands.get(1));
 		
 		if (operator instanceof Addition) {
-			return firstOperand + secondOperand;
+			return _addition;
 		}
 		
 		if (operator instanceof Subtraction) {
-			return firstOperand - secondOperand;
+			return _subtraction;
 		}
 		
 		if (operator instanceof Multiplication) {
-			return firstOperand * secondOperand;
+			return _multiplication;
 		}
 		
 		if (operator instanceof Division) {
-			return firstOperand / secondOperand;
+			return _division;
 		}
 		
 		if (operator instanceof Remainder) {
-			return firstOperand % secondOperand;
+			return _remainder;
 		}
 		
-		throw new NotSupportedOperatorException("Type %s does not support operator %s", getLexemeId(), operator.getLexemeId());
+		return null;
 	}
 
 }

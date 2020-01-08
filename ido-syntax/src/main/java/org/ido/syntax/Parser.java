@@ -48,7 +48,7 @@ public class Parser {
 		}
 	}
 	
-	private List<IVo> _parseFunctionArguments(Position src) throws SyntaxException {
+	private List<IVoComponent> _parseFunctionArguments(Position src) throws SyntaxException {
 		
 		src.skipWhiteCharacters();
 		if (src.str.length() <= src.current || '(' != src.str.charAt(src.current))
@@ -57,7 +57,7 @@ public class Parser {
 		++src.current;
 		src.skipWhiteCharacters();
 		int startVoIdx = src.current;
-		List<IVo> result = new ArrayList<IVo>();
+		List<IVoComponent> result = new ArrayList<IVoComponent>();
 		
 		ExpressionComponent ecs = null;
 		while (src.str.length() > src.current && ')' != src.str.charAt(src.current)) {
@@ -131,7 +131,7 @@ public class Parser {
 		}
 		
 		if (null != ec.function) {
-			List<IVo> fargvs = _parseFunctionArguments(src);
+			List<IVoComponent> fargvs = _parseFunctionArguments(src);
 			ExpressionComponent ecf  = new ExpressionComponent(ec.src, ec.startIdx, src.current - ec.startIdx, ec.lexeme);
 			ecf.functionArgs = fargvs;
 			return ecf;
@@ -140,7 +140,7 @@ public class Parser {
 		return ec;
 	}
 
-	private Position _parseOperator(final Position source, final ExpressionComponent c, List<IVo> operands)  throws SyntaxException {
+	private Position _parseOperator(final Position source, final ExpressionComponent c, List<IVoComponent> operands)  throws SyntaxException {
 		Position os = source.copyForward();
 		int nextOperatorLeftOperandsCount = 0;
 		do {
@@ -171,7 +171,7 @@ public class Parser {
 		
 		
 		final String operandCandidate = source.str.substring(c.startIdx + c.length, os.start);
-		IVo ivo = parse(operandCandidate);
+		IVoComponent ivo = parse(operandCandidate);
 					
 		final int startOperatorIdx = Math.min(c.startIdx, operands.stream().mapToInt(o->o.getComponentDesc().startIdx).min().orElse(Integer.MAX_VALUE));
 		int endOperatorIdx = Math.max(c.startIdx + c.length, os.start);
@@ -186,10 +186,10 @@ public class Parser {
 		return os;
 	}
 	
-	public IVo parse(String src) throws SyntaxException {
+	public IVoComponent parse(String src) throws SyntaxException {
 		Position position = new Position(src);
 		
-		List<IVo> operands = new ArrayList<IVo>();
+		List<IVoComponent> operands = new ArrayList<IVoComponent>();
 		do {
 			final ExpressionComponent c = _parseComponent(position, operands.size());
 			if (null != c.operator) {
