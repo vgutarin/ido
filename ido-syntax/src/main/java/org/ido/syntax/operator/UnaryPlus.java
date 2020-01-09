@@ -2,7 +2,7 @@ package org.ido.syntax.operator;
 
 import org.ido.syntax.OperatorPriority;
 
-public class UnaryPlus extends NumericOperator {
+public class UnaryPlus extends Operator {
 	
 	public UnaryPlus() {
 		super(OperatorPriority.Unary, "+");

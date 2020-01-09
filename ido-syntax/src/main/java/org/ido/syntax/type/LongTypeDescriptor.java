@@ -1,5 +1,6 @@
 package org.ido.syntax.type;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -18,7 +19,7 @@ import org.ido.syntax.operator.UnaryMinus;
 import org.ido.syntax.operator.UnaryPlus;
 import org.ido.syntax.vo.HoldVoValue;
 
-public class LongTypeDescriptor extends TypeDescriptor<Long> {
+public class LongTypeDescriptor extends TypeDescriptor<Long> implements Comparator<Long> {
 
 	private final Pattern _pattern = Pattern.compile("\\d+");
 	
@@ -123,7 +124,7 @@ public class LongTypeDescriptor extends TypeDescriptor<Long> {
 	}
 	
 	@Override
-	public OperatorLogic findLogic(IOperator operator, List<ITypeDescriptor<?>> operands) throws SyntaxException {
+	public OperatorLogic findOperatorLogic(IOperator operator, List<ITypeDescriptor<?>> operands) throws SyntaxException {
 		if (operands.stream().anyMatch(t -> !(t instanceof LongTypeDescriptor))) return null;
 		if (1 == operands.size())
 		{
@@ -161,6 +162,11 @@ public class LongTypeDescriptor extends TypeDescriptor<Long> {
 		}
 		
 		return null;
+	}
+
+	@Override
+	public int compare(Long o1, Long o2) {
+		return Long.compare(o1, o2);
 	}
 
 }

@@ -1,7 +1,13 @@
 package org.ido.syntax.operator;
 
+import java.util.List;
+
 import org.ido.syntax.IOperator;
+import org.ido.syntax.ITypeDescriptor;
+import org.ido.syntax.NotSupportedOperatorException;
+import org.ido.syntax.OperatorLogic;
 import org.ido.syntax.OperatorPriority;
+import org.ido.syntax.SyntaxException;
 
 public abstract class Operator implements IOperator {
 
@@ -41,6 +47,20 @@ public abstract class Operator implements IOperator {
 	@Override
 	public int rightOperandsCount() {
 		return 1;
+	}
+	
+	@Override
+	public OperatorLogic getLogic(List<ITypeDescriptor<?>> operands) throws SyntaxException {
+		for (ITypeDescriptor<?> ot : operands) {
+			OperatorLogic result = ot.findLogic(this, operands);
+			if (null != result) return result;
+		}
+		
+		throw new NotSupportedOperatorException(
+				"Operator %s is not applicable to given arguments: %s",
+				getLexemeId(),
+				SyntaxException.toCsv(operands)
+		);
 	}
 	
 }

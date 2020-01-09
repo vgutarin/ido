@@ -46,7 +46,7 @@ public class BooleanTypeDescriptor extends TypeDescriptor<Boolean> {
 	}
 
 	@Override
-	public OperatorLogic findLogic(IOperator operator, List<ITypeDescriptor<?>> operands) throws SyntaxException {
+	public OperatorLogic findOperatorLogic(IOperator operator, List<ITypeDescriptor<?>> operands) throws SyntaxException {
 		// TODO Auto-generated method stub
 		return null;
 	}
