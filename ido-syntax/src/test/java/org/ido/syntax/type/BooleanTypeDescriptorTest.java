@@ -10,14 +10,14 @@ import org.junit.jupiter.api.Test;
 
 class BooleanTypeDescriptorTest {
 
-	private static final BooleanTypeDescriptor _btd = new BooleanTypeDescriptor();
+	private static final BooleanTypeDescriptor _btd = BooleanTypeDescriptor.instance;
 	
 	@Test
 	void testIsCompartible() {
 		assertFalse(_btd.isCompartible(new LongTypeDescriptor()));
 		assertFalse(_btd.isCompartible(null));
 		assertTrue(_btd.isCompartible(_btd));
-		assertTrue(_btd.isCompartible(new BooleanTypeDescriptor()));
+		assertTrue(_btd.isCompartible(BooleanTypeDescriptor.instance));
 	}
 
 	//TODO

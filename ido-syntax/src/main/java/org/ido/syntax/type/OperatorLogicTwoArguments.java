@@ -21,7 +21,7 @@ abstract class OperatorLogicTwoArguments<T, R> extends OperatorLogic {
 	protected HoldVoValue logic(List<HoldVoValue> operands)  throws SyntaxException {
 		
 		if (2 != operands.size()) {
-			throw new SyntaxException("Tw operands is expected. Actual count is: %d", operands.size());
+			throw new SyntaxException("Two operands are expected. Actual count is: %d", operands.size());
 		}
 		
 		if (operands.stream().allMatch(o-> _argumentType != o.getTypeDescriptor())) {

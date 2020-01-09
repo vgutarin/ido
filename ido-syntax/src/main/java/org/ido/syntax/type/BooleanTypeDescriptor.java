@@ -11,8 +11,14 @@ import org.ido.syntax.SyntaxException;
 
 public class BooleanTypeDescriptor extends TypeDescriptor<Boolean> {
 
+	public static final BooleanTypeDescriptor instance = new BooleanTypeDescriptor();
 	private final static String TRUE = "true", FALSE = "false";
 
+	private BooleanTypeDescriptor()
+	{
+		
+	}
+	
 	@Override
 	public boolean isCompartible(ITypeDescriptor<?> type) {
 		return type instanceof BooleanTypeDescriptor;
