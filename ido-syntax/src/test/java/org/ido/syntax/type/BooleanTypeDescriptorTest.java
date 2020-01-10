@@ -14,7 +14,7 @@ class BooleanTypeDescriptorTest {
 	
 	@Test
 	void testIsCompartible() {
-		assertFalse(_btd.isCompartible(new LongTypeDescriptor()));
+		assertFalse(_btd.isCompartible(LongTypeDescriptor.instance));
 		assertFalse(_btd.isCompartible(null));
 		assertTrue(_btd.isCompartible(_btd));
 		assertTrue(_btd.isCompartible(BooleanTypeDescriptor.instance));

@@ -21,6 +21,8 @@ import org.ido.syntax.vo.HoldVoValue;
 
 public class LongTypeDescriptor extends TypeDescriptor<Long> implements Comparator<Long> {
 
+	public final static LongTypeDescriptor instance = new LongTypeDescriptor();
+	
 	private final Pattern _pattern = Pattern.compile("\\d+");
 	
 	private final OperatorLogic
@@ -32,7 +34,7 @@ public class LongTypeDescriptor extends TypeDescriptor<Long> implements Comparat
 		 _division,
 		 _remainder;
 	
-	public LongTypeDescriptor() {
+	private LongTypeDescriptor() {
 		_unaryMinus = new OperatorLogicOneArgument<Long, Long>(this, this) {
 			
 			@Override

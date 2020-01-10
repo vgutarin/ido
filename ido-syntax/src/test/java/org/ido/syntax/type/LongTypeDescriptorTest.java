@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 public class LongTypeDescriptorTest {
 
-	LongTypeDescriptor ltd = new LongTypeDescriptor(); 
+	LongTypeDescriptor ltd = LongTypeDescriptor.instance; 
 	
 	@Test
 	public void testGetId() {

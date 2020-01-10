@@ -19,9 +19,11 @@ import org.junit.jupiter.api.Test;
 
 public class ParserBasedOnLongTypeTest {
 
+	final ITypeDescriptor<?> td = LongTypeDescriptor.instance;
+	
 	@Test
 	public void testLongTypeDescriptor() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		final ITypeDescriptor<?> td = LongTypeDescriptor.instance;
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				new ArrayList<IOperator>()
@@ -36,7 +38,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongsAddition() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList((IOperator)( new Addition() ))
@@ -51,7 +53,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongsSubtraction() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList((IOperator) new Subtraction())
@@ -66,7 +68,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongsAdditionAndSubtraction() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(
@@ -83,7 +85,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongsMultiplication() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(
@@ -100,7 +102,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongsAdditionAndMultiplication() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(
@@ -120,7 +122,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongsDivision() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(
@@ -138,7 +140,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongsAdditionAndDivision() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(
@@ -162,7 +164,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongsRemainder() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(
@@ -181,7 +183,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongsAdditionAndRemainder() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(
@@ -206,7 +208,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongUnaryMinus() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(
@@ -228,7 +230,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongsUnaryMinusInTheExpressions() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(
@@ -257,7 +259,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongUnaryPlus() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(
@@ -280,7 +282,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongsUnaryPlusInTheExpressions() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(
@@ -310,7 +312,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongParentnesses() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(
@@ -335,7 +337,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongsParentnessesInTheExpressions() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(
@@ -367,7 +369,7 @@ public class ParserBasedOnLongTypeTest {
 	
 	@Test
 	public void testLongsMinFunction() throws SyntaxException {
-		final ITypeDescriptor<?> td = new LongTypeDescriptor();
+		
 		final Parser p = new Parser(
 				Arrays.asList(td),
 				Arrays.asList(

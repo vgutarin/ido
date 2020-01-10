@@ -21,7 +21,7 @@ class MinTest {
 	private final LongTypeDescriptor _longTypeDescriptor;
 	
 	public MinTest() throws SyntaxException {
-		_longTypeDescriptor = new LongTypeDescriptor();
+		_longTypeDescriptor = LongTypeDescriptor.instance;
 		_parser = new Parser(
 				Arrays.asList(_longTypeDescriptor),
 				new ArrayList<IOperator>()
