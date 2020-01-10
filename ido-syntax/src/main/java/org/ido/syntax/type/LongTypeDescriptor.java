@@ -19,7 +19,7 @@ import org.ido.syntax.operator.UnaryMinus;
 import org.ido.syntax.operator.UnaryPlus;
 import org.ido.syntax.vo.HoldVoValue;
 
-public class LongTypeDescriptor extends TypeDescriptor<Long> implements Comparator<Long> {
+public class LongTypeDescriptor extends TypeDescriptor<Long> {
 
 	public final static LongTypeDescriptor instance = new LongTypeDescriptor();
 	
@@ -167,8 +167,8 @@ public class LongTypeDescriptor extends TypeDescriptor<Long> implements Comparat
 	}
 
 	@Override
-	public int compare(Long o1, Long o2) {
-		return Long.compare(o1, o2);
+	protected Comparator<Long> findComparator() {
+		return Long::compare;
 	}
 
 }

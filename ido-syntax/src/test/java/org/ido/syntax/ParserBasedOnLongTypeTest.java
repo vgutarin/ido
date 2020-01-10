@@ -8,11 +8,16 @@ import java.util.Arrays;
 import org.ido.syntax.function.Min;
 import org.ido.syntax.operator.Addition;
 import org.ido.syntax.operator.Division;
+import org.ido.syntax.operator.GreaterOrEqualThan;
+import org.ido.syntax.operator.GreaterThan;
+import org.ido.syntax.operator.LessOrEqualThan;
+import org.ido.syntax.operator.LessThan;
 import org.ido.syntax.operator.Multiplication;
 import org.ido.syntax.operator.Remainder;
 import org.ido.syntax.operator.Subtraction;
 import org.ido.syntax.operator.UnaryMinus;
 import org.ido.syntax.operator.UnaryPlus;
+import org.ido.syntax.type.BooleanTypeDescriptor;
 import org.ido.syntax.type.LongTypeDescriptor;
 import org.junit.jupiter.api.Test;
 
@@ -393,5 +398,153 @@ public class ParserBasedOnLongTypeTest {
 		assertEquals(new Long(-100), p.parse("min(1,22, 179%+(56 + +50), -100)").getValue());
 		
 		assertEquals(new Long(-1000), p.parse("min(1,22, 179%+(56 + +50), -100, min(3, -1000,50))").getValue());
+	}
+	
+	@Test
+	public void testLongsGreaterThanFunction() throws SyntaxException {
+		
+		final Parser p = new Parser(
+				Arrays.asList(td),
+				Arrays.asList(
+					new Addition(),
+					new Subtraction(),
+					new Multiplication(),
+					new Division(),
+					new Remainder(),
+					new UnaryMinus(),
+					new UnaryPlus(),
+					new GreaterThan()
+				),
+				Arrays.asList( new Min())
+		);
+		
+		IVoComponent vo = p.parse("0 > min(-1, - -(+50 + +179) %56)");
+		assertNotNull(vo);
+		assertSame(BooleanTypeDescriptor.instance, vo.getTypeDescriptor());
+		assertEquals(Boolean.TRUE, vo.getValue());
+		
+		assertEquals("0 > min(-1, - -(+50 + +179) %56)", vo.getComponentDesc().str);
+		
+		assertEquals(Boolean.FALSE, p.parse("1 > min(1,22, 179%+(56 + +50))").getValue());
+		assertEquals(Boolean.FALSE, p.parse("1 > 1").getValue());
+		assertEquals(Boolean.TRUE, p.parse("-99 > min(1,22, 179%+(56 + +50), -100)").getValue());
+		assertEquals(Boolean.TRUE, p.parse("-99 > -100").getValue());
+		assertEquals(Boolean.FALSE, p.parse("-101 > min(1,22, 179%+(56 + +50), -100)").getValue());
+		assertEquals(Boolean.FALSE, p.parse("-101 > -100").getValue());
+		
+	}
+	
+	@Test
+	public void testLongsGreaterOrEqualThanFunction() throws SyntaxException {
+		
+		final Parser p = new Parser(
+				Arrays.asList(td),
+				Arrays.asList(
+					new Addition(),
+					new Subtraction(),
+					new Multiplication(),
+					new Division(),
+					new Remainder(),
+					new UnaryMinus(),
+					new UnaryPlus(),
+					new GreaterThan(),
+					new GreaterOrEqualThan()
+				),
+				Arrays.asList( new Min())
+		);
+		
+		IVoComponent vo = p.parse("0 >= min(-1, - -(+50 + +179) %56)");
+		assertNotNull(vo);
+		assertSame(BooleanTypeDescriptor.instance, vo.getTypeDescriptor());
+		assertEquals(Boolean.TRUE, vo.getValue());
+		
+		assertEquals("0 >= min(-1, - -(+50 + +179) %56)", vo.getComponentDesc().str);
+		
+		assertEquals(Boolean.TRUE, p.parse("1 >= min(1,22, 179%+(56 + +50))").getValue());
+		assertEquals(Boolean.TRUE, p.parse("1 >= 1").getValue());
+		assertEquals(Boolean.TRUE, p.parse("-99 >= min(1,22, 179%+(56 + +50), -100)").getValue());
+		assertEquals(Boolean.TRUE, p.parse("-99 >= -100").getValue());
+		assertEquals(Boolean.TRUE, p.parse("-100 >= min(1,22, 179%+(56 + +50), -100)").getValue());
+		assertEquals(Boolean.TRUE, p.parse("-100 >= -100").getValue());
+		assertEquals(Boolean.FALSE, p.parse("-101 >= min(1,22, 179%+(56 + +50), -100)").getValue());
+		assertEquals(Boolean.FALSE, p.parse("-101 >= -100").getValue());
+		
+	}
+	
+	@Test
+	public void testLongsLessThanFunction() throws SyntaxException {
+		
+		final Parser p = new Parser(
+				Arrays.asList(td),
+				Arrays.asList(
+					new Addition(),
+					new Subtraction(),
+					new Multiplication(),
+					new Division(),
+					new Remainder(),
+					new UnaryMinus(),
+					new UnaryPlus(),
+					new GreaterThan(),
+					new GreaterOrEqualThan(),
+					new LessThan()
+				),
+				Arrays.asList( new Min())
+		);
+		
+		IVoComponent vo = p.parse("0 < min(-1, - -(+50 + +179) %56)");
+		assertNotNull(vo);
+		assertSame(BooleanTypeDescriptor.instance, vo.getTypeDescriptor());
+		assertEquals(Boolean.FALSE, vo.getValue());
+		
+		assertEquals("0 < min(-1, - -(+50 + +179) %56)", vo.getComponentDesc().str);
+		
+		assertEquals(Boolean.FALSE, p.parse("1 < min(1,22, 179%+(56 + +50))").getValue());
+		assertEquals(Boolean.FALSE, p.parse("1 < 1").getValue());
+		assertEquals(Boolean.FALSE, p.parse("-99 < min(1,22, 179%+(56 + +50), -100)").getValue());
+		assertEquals(Boolean.FALSE, p.parse("-99 < -100").getValue());
+		assertEquals(Boolean.FALSE, p.parse("-100 < min(1,22, 179%+(56 + +50), -100)").getValue());
+		assertEquals(Boolean.FALSE, p.parse("-100 < -100").getValue());
+		assertEquals(Boolean.TRUE, p.parse("-101 < min(1,22, 179%+(56 + +50), -100)").getValue());
+		assertEquals(Boolean.TRUE, p.parse("-101 < -100").getValue());
+		
+	}
+	
+	@Test
+	public void testLongsLessOrEqualThanFunction() throws SyntaxException {
+		
+		final Parser p = new Parser(
+				Arrays.asList(td),
+				Arrays.asList(
+					new Addition(),
+					new Subtraction(),
+					new Multiplication(),
+					new Division(),
+					new Remainder(),
+					new UnaryMinus(),
+					new UnaryPlus(),
+					new GreaterThan(),
+					new GreaterOrEqualThan(),
+					new LessThan(),
+					new LessOrEqualThan()
+				),
+				Arrays.asList( new Min())
+		);
+		
+		IVoComponent vo = p.parse("0 <= min(-1, - -(+50 + +179) %56)");
+		assertNotNull(vo);
+		assertSame(BooleanTypeDescriptor.instance, vo.getTypeDescriptor());
+		assertEquals(Boolean.FALSE, vo.getValue());
+		
+		assertEquals("0 <= min(-1, - -(+50 + +179) %56)", vo.getComponentDesc().str);
+		
+		assertEquals(Boolean.TRUE, p.parse("1 <= min(1,22, 179%+(56 + +50))").getValue());
+		assertEquals(Boolean.TRUE, p.parse("1 <= 1").getValue());
+		assertEquals(Boolean.FALSE, p.parse("-99 <= min(1,22, 179%+(56 + +50), -100)").getValue());
+		assertEquals(Boolean.FALSE, p.parse("-99 <= -100").getValue());
+		assertEquals(Boolean.TRUE, p.parse("-100 <= min(1,22, 179%+(56 + +50), -100)").getValue());
+		assertEquals(Boolean.TRUE, p.parse("-100 <= -100").getValue());
+		assertEquals(Boolean.TRUE, p.parse("-101 <= min(1,22, 179%+(56 + +50), -100)").getValue());
+		assertEquals(Boolean.TRUE, p.parse("-101 <= -100").getValue());
+		
 	}
 }
