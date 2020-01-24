@@ -1,15 +1,15 @@
 package org.ido.syntax.function;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.ido.syntax.IOperator;
 import org.ido.syntax.ITypeDescriptor;
 import org.ido.syntax.Parser;
+import org.ido.syntax.ParserBuilder;
 import org.ido.syntax.SyntaxException;
 import org.ido.syntax.type.LongTypeDescriptor;
 import org.ido.syntax.vo.HoldVoValue;
@@ -22,10 +22,9 @@ class MinTest {
 	
 	public MinTest() throws SyntaxException {
 		_longTypeDescriptor = LongTypeDescriptor.instance;
-		_parser = new Parser(
-				Arrays.asList(_longTypeDescriptor),
-				new ArrayList<IOperator>()
-		);
+		_parser = new ParserBuilder()
+				.withTypes(_longTypeDescriptor)
+				.build();
 	}
 
 	@Test

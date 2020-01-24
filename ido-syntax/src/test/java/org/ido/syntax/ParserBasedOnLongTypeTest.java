@@ -1,9 +1,8 @@
 package org.ido.syntax;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.ido.syntax.function.Min;
 import org.ido.syntax.operator.Addition;
@@ -19,20 +18,24 @@ import org.ido.syntax.operator.UnaryMinus;
 import org.ido.syntax.operator.UnaryPlus;
 import org.ido.syntax.type.BooleanTypeDescriptor;
 import org.ido.syntax.type.LongTypeDescriptor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
 public class ParserBasedOnLongTypeTest {
-
+	
 	final ITypeDescriptor<?> td = LongTypeDescriptor.instance;
+	protected ParserBuilder builder;
+	
+	@BeforeEach
+	void setUp() {
+		builder = new ParserBuilder().withTypes(td);
+	}
 	
 	@Test
 	public void testLongTypeDescriptor() throws SyntaxException {
-		final ITypeDescriptor<?> td = LongTypeDescriptor.instance;
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				new ArrayList<IOperator>()
-		);
+		
+		final Parser p = builder.build();
 		
 		IVoComponent vo = p.parse(" 123 ");
 		assertNotNull(vo);
@@ -44,10 +47,10 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsAddition() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList((IOperator)( new Addition() ))
-		);
+		final Parser p = 
+				builder
+					.withOperators( new Addition() )
+				.build();
 		
 		IVoComponent vo = p.parse(" 123 + 56");
 		assertNotNull(vo);
@@ -59,10 +62,10 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsSubtraction() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList((IOperator) new Subtraction())
-		);
+		final Parser p = 
+				builder
+					.withOperators( new Subtraction() )
+				.build();
 		
 		IVoComponent vo = p.parse(" 179 - 56");
 		assertNotNull(vo);
@@ -74,12 +77,13 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsAdditionAndSubtraction() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-					(IOperator) new Addition(),
-					(IOperator) new Subtraction())
-		);
+		final Parser p = 
+				builder
+					.withOperators(
+						new Addition(),
+						new Subtraction()
+					)
+				.build();
 		
 		IVoComponent vo = p.parse("50 + 179 - 56");
 		assertNotNull(vo);
@@ -91,12 +95,12 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsMultiplication() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-						new Subtraction(),
-						new Multiplication())
-		);
+		final Parser p = builder
+					.withOperators(
+						new Multiplication(),
+						new Subtraction()
+					)
+				.build();
 		
 		IVoComponent vo = p.parse(" 179 *56");
 		assertNotNull(vo);
@@ -108,13 +112,13 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsAdditionAndMultiplication() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-					new Addition(),
-					new Subtraction(),
-					new Multiplication())
-		);
+		final Parser p = builder
+		.withOperators(
+				new Addition(),
+				new Subtraction(),
+				new Multiplication()
+			)
+		.build();
 		
 		IVoComponent vo = p.parse("50 + 179 *56");
 		assertNotNull(vo);
@@ -128,13 +132,13 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsDivision() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-						new Subtraction(),
+		final Parser p = builder
+					.withOperators(
 						new Multiplication(),
-						new Division())
-		);
+						new Subtraction(),
+						new Division()
+					)
+				.build();
 		
 		IVoComponent vo = p.parse(" 179 /56");
 		assertNotNull(vo);
@@ -146,14 +150,14 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsAdditionAndDivision() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-					new Addition(),
-					new Subtraction(),
-					new Multiplication(),
-					new Division())
-		);
+		final Parser p = builder
+					.withOperators(
+						new Addition(),
+						new Subtraction(),
+						new Multiplication(),
+						new Division()
+					)
+				.build();
 		
 		IVoComponent vo = p.parse("50 + 179 /56");
 		assertNotNull(vo);
@@ -170,14 +174,15 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsRemainder() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
+		final Parser p = builder
+					.withOperators(
+						new Addition(),
 						new Subtraction(),
 						new Multiplication(),
 						new Division(),
-						new Remainder())
-		);
+						new Remainder()
+					)
+				.build();
 		
 		IVoComponent vo = p.parse(" 179 %56");
 		assertNotNull(vo);
@@ -189,15 +194,15 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsAdditionAndRemainder() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-					new Addition(),
-					new Subtraction(),
-					new Multiplication(),
-					new Division(),
-					new Remainder())
-		);
+		final Parser p = builder
+					.withOperators(
+						new Addition(),
+						new Subtraction(),
+						new Multiplication(),
+						new Division(),
+						new Remainder()
+					)
+				.build();
 		
 		IVoComponent vo = p.parse("50 + 179 %56");
 		assertNotNull(vo);
@@ -214,15 +219,16 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongUnaryMinus() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
+		final Parser p = builder
+					.withOperators(
+						new Addition(),
 						new Subtraction(),
 						new Multiplication(),
 						new Division(),
 						new Remainder(),
-						new UnaryMinus())
-		);
+						new UnaryMinus()
+					)
+				.build();
 		
 		IVoComponent vo = p.parse(" - 179");
 		assertNotNull(vo);
@@ -236,16 +242,16 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsUnaryMinusInTheExpressions() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-					new Addition(),
-					new Subtraction(),
-					new Multiplication(),
-					new Division(),
-					new Remainder(),
-					new UnaryMinus())
-		);
+		final Parser p = builder
+					.withOperators(
+						new Addition(),
+						new Subtraction(),
+						new Multiplication(),
+						new Division(),
+						new Remainder(),
+						new UnaryMinus()
+					)
+				.build();
 		
 		IVoComponent vo = p.parse(" - -50 + 179 %56");
 		assertNotNull(vo);
@@ -265,16 +271,17 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongUnaryPlus() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
+		final Parser p = builder
+					.withOperators(
+						new Addition(),
 						new Subtraction(),
 						new Multiplication(),
 						new Division(),
 						new Remainder(),
 						new UnaryMinus(),
-						new UnaryPlus())
-		);
+						new UnaryPlus()
+					)
+				.build();
 		
 		IVoComponent vo = p.parse(" +- 179");
 		assertNotNull(vo);
@@ -288,17 +295,17 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsUnaryPlusInTheExpressions() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-					new Addition(),
-					new Subtraction(),
-					new Multiplication(),
-					new Division(),
-					new Remainder(),
-					new UnaryMinus(),
-					new UnaryPlus())
-		);
+		final Parser p = builder
+					.withOperators(
+						new Addition(),
+						new Subtraction(),
+						new Multiplication(),
+						new Division(),
+						new Remainder(),
+						new UnaryMinus(),
+						new UnaryPlus()
+					)
+				.build();
 		
 		IVoComponent vo = p.parse(" - -+50 + +179 %56");
 		assertNotNull(vo);
@@ -318,9 +325,8 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongParentnesses() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
+		final Parser p = builder
+					.withOperators(
 						new Addition(),
 						new Subtraction(),
 						new Multiplication(),
@@ -328,8 +334,8 @@ public class ParserBasedOnLongTypeTest {
 						new Remainder(),
 						new UnaryMinus(),
 						new UnaryPlus()
-				)
-		);
+					)
+				.build();
 		
 		IVoComponent vo = p.parse(" (+- 179)");
 		assertNotNull(vo);
@@ -343,18 +349,17 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsParentnessesInTheExpressions() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-					new Addition(),
-					new Subtraction(),
-					new Multiplication(),
-					new Division(),
-					new Remainder(),
-					new UnaryMinus(),
-					new UnaryPlus()
-				)
-		);
+		final Parser p = builder
+					.withOperators(
+						new Addition(),
+						new Subtraction(),
+						new Multiplication(),
+						new Division(),
+						new Remainder(),
+						new UnaryMinus(),
+						new UnaryPlus()
+					)
+				.build();
 		
 		IVoComponent vo = p.parse(" - -(+50 + +179) %56");
 		assertNotNull(vo);
@@ -375,19 +380,18 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsMinFunction() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-					new Addition(),
-					new Subtraction(),
-					new Multiplication(),
-					new Division(),
-					new Remainder(),
-					new UnaryMinus(),
-					new UnaryPlus()
-				),
-				Arrays.asList( new Min())
-		);
+		final Parser p = builder
+					.withOperators(
+						new Addition(),
+						new Subtraction(),
+						new Multiplication(),
+						new Division(),
+						new Remainder(),
+						new UnaryMinus(),
+						new UnaryPlus()
+					)
+					.withFunctions(new Min())
+				.build();
 		
 		IVoComponent vo = p.parse(" min(-1, - -(+50 + +179) %56)");
 		assertNotNull(vo);
@@ -403,20 +407,19 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsGreaterThanFunction() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-					new Addition(),
-					new Subtraction(),
-					new Multiplication(),
-					new Division(),
-					new Remainder(),
-					new UnaryMinus(),
-					new UnaryPlus(),
-					new GreaterThan()
-				),
-				Arrays.asList( new Min())
-		);
+		final Parser p = builder
+					.withOperators(
+						new Addition(),
+						new Subtraction(),
+						new Multiplication(),
+						new Division(),
+						new Remainder(),
+						new UnaryMinus(),
+						new UnaryPlus(),
+						new GreaterThan()
+					)
+					.withFunctions(new Min())
+				.build();
 		
 		IVoComponent vo = p.parse("0 > min(-1, - -(+50 + +179) %56)");
 		assertNotNull(vo);
@@ -437,21 +440,20 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsGreaterOrEqualThanFunction() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-					new Addition(),
-					new Subtraction(),
-					new Multiplication(),
-					new Division(),
-					new Remainder(),
-					new UnaryMinus(),
-					new UnaryPlus(),
-					new GreaterThan(),
-					new GreaterOrEqualThan()
-				),
-				Arrays.asList( new Min())
-		);
+		final Parser p = builder
+					.withOperators(
+						new Addition(),
+						new Subtraction(),
+						new Multiplication(),
+						new Division(),
+						new Remainder(),
+						new UnaryMinus(),
+						new UnaryPlus(),
+						new GreaterThan(),
+						new GreaterOrEqualThan()
+					)
+					.withFunctions(new Min())
+				.build();
 		
 		IVoComponent vo = p.parse("0 >= min(-1, - -(+50 + +179) %56)");
 		assertNotNull(vo);
@@ -474,22 +476,21 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsLessThanFunction() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-					new Addition(),
-					new Subtraction(),
-					new Multiplication(),
-					new Division(),
-					new Remainder(),
-					new UnaryMinus(),
-					new UnaryPlus(),
-					new GreaterThan(),
-					new GreaterOrEqualThan(),
-					new LessThan()
-				),
-				Arrays.asList( new Min())
-		);
+		final Parser p = builder
+					.withOperators(
+						new Addition(),
+						new Subtraction(),
+						new Multiplication(),
+						new Division(),
+						new Remainder(),
+						new UnaryMinus(),
+						new UnaryPlus(),
+						new GreaterThan(),
+						new GreaterOrEqualThan(),
+						new LessThan()
+					)
+					.withFunctions(new Min())
+				.build();
 		
 		IVoComponent vo = p.parse("0 < min(-1, - -(+50 + +179) %56)");
 		assertNotNull(vo);
@@ -512,23 +513,22 @@ public class ParserBasedOnLongTypeTest {
 	@Test
 	public void testLongsLessOrEqualThanFunction() throws SyntaxException {
 		
-		final Parser p = new Parser(
-				Arrays.asList(td),
-				Arrays.asList(
-					new Addition(),
-					new Subtraction(),
-					new Multiplication(),
-					new Division(),
-					new Remainder(),
-					new UnaryMinus(),
-					new UnaryPlus(),
-					new GreaterThan(),
-					new GreaterOrEqualThan(),
-					new LessThan(),
-					new LessOrEqualThan()
-				),
-				Arrays.asList( new Min())
-		);
+		final Parser p = builder
+					.withOperators(
+						new Addition(),
+						new Subtraction(),
+						new Multiplication(),
+						new Division(),
+						new Remainder(),
+						new UnaryMinus(),
+						new UnaryPlus(),
+						new GreaterThan(),
+						new GreaterOrEqualThan(),
+						new LessThan(),
+						new LessOrEqualThan()
+					)
+					.withFunctions(new Min())
+				.build();
 		
 		IVoComponent vo = p.parse("0 <= min(-1, - -(+50 + +179) %56)");
 		assertNotNull(vo);

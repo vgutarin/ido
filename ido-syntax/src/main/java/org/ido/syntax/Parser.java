@@ -15,7 +15,7 @@ public class Parser {
 	private final List<IOperator> _operators;
 	private final List<IFunction> _functions;
 
-	public Parser(List<ITypeDescriptor<?>> types, List<IOperator> operators, List<IFunction> functions) throws SyntaxException {
+	Parser(List<ITypeDescriptor<?>> types, List<IOperator> operators, List<IFunction> functions) throws SyntaxException {
 
 		// TODO make sure typeId`s are unique
 		_types = new ArrayList<ILexeme>(types);
@@ -25,9 +25,7 @@ public class Parser {
 		_operators = new ArrayList<IOperator>(operators);
 		_functions = new ArrayList<IFunction>(functions);
 	}
-	public Parser(List<ITypeDescriptor<?>> types, List<IOperator> operators) throws SyntaxException {
-		this(types, operators, new ArrayList<IFunction>());
-	}
+	
 	private <LT extends ILexeme> void _removeNotApplicable(Position src, List<LT> lexemes) {
 		src.skipWhiteCharacters();
 		final int firstNotWhiteIdx =  src.current;
