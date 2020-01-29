@@ -16,7 +16,7 @@ public abstract class Vo implements IVoComponent {
 		
 	}
 	protected Vo(ExpressionComponent component) throws ParserException {
-		this(component, component.typeDescriptor);
+		this(component, component.literal);
 	}
 
 	@Override

@@ -14,7 +14,7 @@ public class Parser {
 	private final List<ILexeme> _types;
 	private final List<IOperator> _operators;
 	private final List<IFunction> _functions;
-
+	
 	Parser(List<ITypeDescriptor<?>> types, List<IOperator> operators, List<IFunction> functions) throws SyntaxException {
 
 		// TODO make sure typeId`s are unique
@@ -44,6 +44,25 @@ public class Parser {
 		if (firstNotWhiteIdx == src.current) {
 			lexemes.clear();
 		}
+	}
+	
+	private ILexeme _getLexemeCandidate(Position src, final int leftOperandsCount) throws ParserException {
+		List<ILexeme> lexemes = new ArrayList<ILexeme>(_types);
+		lexemes.addAll(_functions);
+		lexemes.addAll(_operators.stream().filter(o-> o.leftOperandsCount() == leftOperandsCount).collect(Collectors.toList()));
+		_removeNotApplicable(src, lexemes);
+		
+		if (lexemes.isEmpty())
+			throw new ParserException("Cannot find any lexeme on position: %s.",
+					src.toString());
+
+		if (1 < lexemes.size())
+			throw new ParserException(
+					"Ambiguous source code (%s lexemes are applicable simultaneously) near position: %s",
+					SyntaxException.toCsv(lexemes),
+					src.toString());
+		
+		return lexemes.get(0);
 	}
 	
 	private List<IVoComponent> _parseFunctionArguments(Position src) throws SyntaxException {
@@ -82,28 +101,14 @@ public class Parser {
 	}
 	
 	private ExpressionComponent _parseComponent(Position src, final int leftOperandsCount) throws SyntaxException {
-		List<ILexeme> lexemes = new ArrayList<ILexeme>(_types);
-		lexemes.addAll(_functions);
-		lexemes.addAll(_operators.stream().filter(o-> o.leftOperandsCount() == leftOperandsCount).collect(Collectors.toList()));
 		final int startPosition = src.current;
-		_removeNotApplicable(src, lexemes);
-
+		final ILexeme lexeme = _getLexemeCandidate(src, leftOperandsCount);
 		final String candidateRawSrc = src.str.substring(startPosition, src.current);
 		final String candidateSrc = candidateRawSrc.trim();
 
-		if (lexemes.isEmpty())
-			throw new ParserException("Cannot find any lexeme on position: %s.",
-					src.toString());
-
-		if (1 < lexemes.size())
-			throw new ParserException(
-					"Ambiguous source code (%s lexemes are applicable simultaneously) near position: %s",
-					SyntaxException.toCsv(lexemes),
-					src.toString());
-
-		final ExpressionComponent ec = new ExpressionComponent(src, startPosition, src.current - startPosition, lexemes.get(0));
-		if (null != ec.typeDescriptor) {
-			if (!ec.typeDescriptor.isStringRepresentationValid(candidateSrc)) {
+		final ExpressionComponent ec = new ExpressionComponent(src, startPosition, src.current - startPosition, lexeme);
+		if (null != ec.literal) {
+			if (!ec.literal.isStringRepresentationValid(candidateSrc)) {
 				throw new ParserException("Type %s is not able to parse source near position: %s.", ec.lexeme.getLexemeId(),
 						src.toString());
 			}
@@ -192,7 +197,7 @@ public class Parser {
 			final ExpressionComponent c = _parseComponent(position, operands.size());
 			if (null != c.operator) {
 				position = _parseOperator(position, c, operands);
-			} else if (null != c.typeDescriptor) {
+			} else if (null != c.literal) {
 				operands.add(new ImmutableVo(c));
 				position = position.copyForward();
 			} else if (null != c.scope) {

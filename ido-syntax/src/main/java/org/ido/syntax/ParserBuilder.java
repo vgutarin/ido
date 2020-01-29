@@ -8,6 +8,7 @@ public class ParserBuilder {
 	private final List<ITypeDescriptor<?>> _types;
 	private final List<IOperator> _operators;
 	private final List<IFunction> _functions;
+	private IVariablesProvider _variablesProvider;
 	
 	public ParserBuilder() {
 		_types = new ArrayList<ITypeDescriptor<?>>();
@@ -36,8 +37,16 @@ public class ParserBuilder {
 		return this;
 	}
 	
+	public ParserBuilder withVariablesProvider(IVariablesProvider variablesProvider) throws ParserException {
+		if (null != _variablesProvider) {
+			throw new ParserException("Variables provider is already registered");
+		}		
+		_variablesProvider = variablesProvider;
+		return this;
+	}
+	
 	public Parser build() throws SyntaxException
 	{
-		return new Parser(_types, _operators, _functions);
+		return new Parser(_types, _operators, _functions); //_variablesProvider
 	}
 }
