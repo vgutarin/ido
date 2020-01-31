@@ -4,18 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.ido.syntax.variable.VariablesHolder;
 import org.ido.syntax.vo.FunctionEvaluationVo;
 import org.ido.syntax.vo.ImmutableVo;
 import org.ido.syntax.vo.OperatorEvaluationVo;
 import org.ido.syntax.vo.ScopeVo;
+import org.ido.syntax.vo.VariableComponentVo;
 
 public class Parser {
 
 	private final List<ILexeme> _types;
 	private final List<IOperator> _operators;
 	private final List<IFunction> _functions;
+	private final IVariablesProvider _variablesProvider;
 	
-	Parser(List<ITypeDescriptor<?>> types, List<IOperator> operators, List<IFunction> functions) throws SyntaxException {
+	Parser(List<ITypeDescriptor<?>> types, List<IOperator> operators, List<IFunction> functions, IVariablesProvider variablesProvider) throws SyntaxException {
 
 		// TODO make sure typeId`s are unique
 		_types = new ArrayList<ILexeme>(types);
@@ -24,16 +27,21 @@ public class Parser {
 		_types.add(parentheses.closeLexeme);
 		_operators = new ArrayList<IOperator>(operators);
 		_functions = new ArrayList<IFunction>(functions);
+		_variablesProvider = null == variablesProvider ? new VariablesHolder() : variablesProvider;
 	}
 	
-	private <LT extends ILexeme> void _removeNotApplicable(Position src, List<LT> lexemes) {
+	private void _removeNotApplicable(Position src, List<ILexeme> lexemes) {
 		src.skipWhiteCharacters();
-		final int firstNotWhiteIdx =  src.current;
+		final int firstNotWhiteIdx = src.current;
 
 		for (; src.current < src.str.length(); ++src.current) {
 			final String stringToAnalyze = src.str.substring(firstNotWhiteIdx, src.current + 1);
 
-			if (lexemes.stream().anyMatch(t -> t.isStringRepresentationStartsWith(stringToAnalyze))) {
+			if (
+					_variablesProvider.hasAnyStartsWith(stringToAnalyze)
+					||
+					lexemes.stream().anyMatch(t -> t.isStringRepresentationStartsWith(stringToAnalyze))
+				) {
 				lexemes.removeIf(t -> !t.isStringRepresentationStartsWith(stringToAnalyze));
 				continue;
 			}
@@ -43,6 +51,11 @@ public class Parser {
 		
 		if (firstNotWhiteIdx == src.current) {
 			lexemes.clear();
+		} else if (lexemes.isEmpty()) {
+			String varNaneCandidate = src.str.substring(firstNotWhiteIdx, src.current);
+			IVariable variable = _variablesProvider.findByName(varNaneCandidate);
+			if (null != variable)
+				lexemes.add(variable);
 		}
 	}
 	
@@ -110,6 +123,14 @@ public class Parser {
 		if (null != ec.literal) {
 			if (!ec.literal.isStringRepresentationValid(candidateSrc)) {
 				throw new ParserException("Type %s is not able to parse source near position: %s.", ec.lexeme.getLexemeId(),
+						src.toString());
+			}
+			return ec;
+		}
+		
+		if (null != ec.variable) {
+			if (!ec.variable.getName().equals(candidateSrc)) {
+				throw new ParserException("IVariable %s is not able to parse source near position: %s.", ec.lexeme.getLexemeId(),
 						src.toString());
 			}
 			return ec;
@@ -199,6 +220,9 @@ public class Parser {
 				position = _parseOperator(position, c, operands);
 			} else if (null != c.literal) {
 				operands.add(new ImmutableVo(c));
+				position = position.copyForward();
+			} else if (null != c.variable) {
+				operands.add(new VariableComponentVo(c));
 				position = position.copyForward();
 			} else if (null != c.scope) {
 				operands.add(

@@ -12,7 +12,7 @@ public class ListVo extends Vo {
 	private final List<IVoComponent> _value;
 	public final boolean _isMutable;
 	public ListVo(ExpressionComponent component, List<IVoComponent> values) throws ParserException {
-		super(component);
+		super(component, null);
 		_value = java.util.Collections.unmodifiableList(new ArrayList<IVoComponent>(values));
 		_isMutable = _value.stream().anyMatch(v -> v.isMutable());
 	}

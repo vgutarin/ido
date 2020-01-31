@@ -47,6 +47,6 @@ public class ParserBuilder {
 	
 	public Parser build() throws SyntaxException
 	{
-		return new Parser(_types, _operators, _functions); //_variablesProvider
+		return new Parser(_types, _operators, _functions, _variablesProvider);
 	}
 }

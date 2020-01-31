@@ -6,17 +6,14 @@ import org.ido.syntax.IVoComponent;
 import org.ido.syntax.ParserException;
 
 public abstract class Vo implements IVoComponent {
-	private final ExpressionComponent  _component;
+	protected final ExpressionComponent  component;
 	private final ITypeDescriptor<?> _typeDescriptor;
 	
 	protected Vo(ExpressionComponent component, ITypeDescriptor<?> typeDescriptor) throws ParserException {
-		_component = component;
-		if (null == _component) throw new ParserException("Component must be not null"); 
+		this.component = component;
+		if (null == component) throw new ParserException("Component must be not null"); 
 		_typeDescriptor = typeDescriptor;
 		
-	}
-	protected Vo(ExpressionComponent component) throws ParserException {
-		this(component, component.literal);
 	}
 
 	@Override
@@ -26,6 +23,6 @@ public abstract class Vo implements IVoComponent {
 
 	@Override
 	public ExpressionComponent getComponentDesc() {
-		return _component;
+		return component;
 	}
 }

@@ -14,6 +14,7 @@ public class ExpressionComponent {
 	public final Scope scope;
 	public final IFunction function;
 	public List<IVoComponent> functionArgs;
+	public final IVariable variable;
 
 	public ExpressionComponent(Position src, int startIdx, int length, ILexeme lexeme) {
 		this.src = src;
@@ -25,6 +26,7 @@ public class ExpressionComponent {
 		operator = this.lexeme instanceof IOperator ? (IOperator) this.lexeme : null;
 		scope = this.lexeme instanceof Scope ? (Scope) this.lexeme : null;
 		function = this.lexeme instanceof IFunction ? (IFunction) this.lexeme : null;
+		variable = this.lexeme instanceof IVariable ? (IVariable) this.lexeme : null;
 	}
 
 }

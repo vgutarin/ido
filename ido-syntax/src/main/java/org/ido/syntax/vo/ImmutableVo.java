@@ -7,7 +7,7 @@ public class ImmutableVo extends Vo {
 
 	private final Object _value;
 	public ImmutableVo(ExpressionComponent component) throws ParserException {
-		super(component);
+		super(component, component.literal);
 		
 		_value = getTypeDescriptor().parseValue(component.str);
 	}
